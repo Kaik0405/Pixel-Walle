@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Pixel_Walle
@@ -84,11 +85,51 @@ namespace Pixel_Walle
         private string[]? code;
         private List<Token> tokensList;
         public string[] Code { get; private set; }
+        public Token[] TokensList
+        {
+            get
+            {
+                if (tokensList.Count == 0)
+                    return GetLexer();
+                else
+                    return tokensList.ToArray();
+            }
+            private set { }
+        }
+        //Builder
         public Lexer(string[] code)
         {
             this.code = code;
             tokensList = new List<Token>();
         }
+        //Methods
+        public Token[] GetLexer()
+        {
+            string input = string.Join('\n'.ToString(), code);
+            string pattern = $"{string.Join("|", KeyWords.Keys)}";
+            MatchCollection matches = Regex.Matches(input, pattern);
 
+            foreach (Match match in matches)
+            {
+                if (KeyWords.TryGetValue(match.Value, out var tokenType))
+                    tokensList.Add(new Token(tokenType, match.Value, Token.SearchLine(input, match.Index), Token.SearchColumn(input, match.Index)));
+
+                else if (match.Value.All(char.IsDigit) && Regex.IsMatch(match.Value, "\\d+"))
+                    tokensList.Add(new Token(Token.TokenType.Digit, match.Value, Token.SearchLine(input, match.Index), Token.SearchColumn(input, match.Index)));
+
+                else
+                {
+                    foreach (string item in KeyWords.Keys)
+                    {
+                        if (Regex.IsMatch(match.Value, item))
+                        {
+                            tokensList.Add(new Token(KeyWords[item], match.Value, Token.SearchLine(input, match.Index), Token.SearchColumn(input, match.Index)));
+                            break;
+                        }
+                    }
+                }
+            }
+            return tokensList.ToArray();
+        }
     }
 }
