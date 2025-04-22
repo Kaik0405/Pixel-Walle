@@ -1,5 +1,4 @@
-﻿using Pixel_Walle.Interpreter.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -60,7 +59,80 @@ namespace Pixel_Walle
 
             return true;
         }       // Retorna <true> si los siguientes Tokens corresponden con la secuencia pasada por parámetro
+        private void Match()
+        {
+            if (ThereIsNext())
+                CurrentToken = Tokens[++Index];
+        }                // Avanza sin importar el siguiente Token
+        private Token? MatchReturn(params Token.TokenType[] nextTokens)
+        {
+            if (nextTokens.Length != 0)
+            {
+                foreach (Token.TokenType item in nextTokens)
+                {
+                    if (item == LookAhead()?.Type)
+                    {
+                        this.CurrentToken = Tokens[++Index];
+                        return CurrentToken;
+                    }
+                }
+                Utils.Errors.Add($"Error: No se esperaba un \"{LookAhead()?.Value}\" Line: {LookAhead()?.Line}, Column: {LookAhead()?.Column}");
+                if (ThereIsNext())
+                    this.CurrentToken = Tokens[++Index];
+            }
+            else
+            {
+                this.CurrentToken = Tokens[++Index];
+                return CurrentToken;
+            }
+
+            return null;
+        }         // Retorna uno de los coincidentes
+        private Expression ExpressionBuilder()
+        {
+            Expression expression = new Expression();
+            expression.Terms = TermBuilder();
+
+            if (LookAhead(false, Token.TokenType.Plus, Token.TokenType.Minus))
+            {
+                expression.Operator = MatchReturn();
+                expression.Expressions = ExpressionBuilder();
+            }
+
+            return expression;
+        }
+        private Term TermBuilder()
+        {
+            Term term = new Term();
+            term.Factor = FactorBuilder();
+            if (LookAhead(false, Token.TokenType.Times, Token.TokenType.Divide, Token.TokenType.Pow, Token.TokenType.Module))
+            {
+                term.Value = MatchReturn();
+                term.Terms = TermBuilder();
+            }
+            return term;
+        }
+        private Factor FactorBuilder()
+        {
+            Factor factor = new Factor();
+            if (LookAhead(false, Token.TokenType.Digit))
+            {
+                factor.Value = MatchReturn();
+            }
+            else if (LookAhead(false, Token.TokenType.OpenParan))
+            {
+                Match(Token.TokenType.OpenParan);
+                factor.Expressions = ExpressionBuilder();
+                Match(Token.TokenType.ClosedParan);
+            }
+            else
+            {
+                //variable implementation
+            }
+            return factor;
+        }
     }
+    //Binary Expressions
     public class Expression
     {
         public Token? Operator { get; set; }
@@ -68,20 +140,16 @@ namespace Pixel_Walle
         public Term? Terms { get; set; }
         public double Evaluate()
         {
-            if (Terms != null)
-            {
-                if (Expressions != null)
-                {
-                    double a = Terms.Evaluate();
-                    double b = Expressions.Evaluate();
+            if (Terms != null && Expressions != null)
+            { 
+                double a = Terms.Evaluate();
+                double b = Expressions.Evaluate();
 
-                    return Utils.Operation(a, b, Operator);
-                }
-                else
-                    return Terms.Evaluate();
-
+                return Utils.Operation(a, b, Operator);
             }
-            return 0;
+            else
+                return Terms.Evaluate();
+            
         }
     }
     public class Term
@@ -118,13 +186,16 @@ namespace Pixel_Walle
             {
                 if (Value.Type == Token.TokenType.Digit)
                     return double.Parse(Value.Value);
-                //else
-                //return throw NotImplementedException();
 
+                else
+                {
+                    string mensajeError = $"Error: El carácter de la línea {Value.Line} y columna {Value.Column} no se encuentra declarado o no es válido";
+                    Utils.Errors.Add(mensajeError);
+                    throw new ArgumentException(mensajeError);
+                }
             }
             else return Expressions.Evaluate();
-
-            return 0;
         }
     }
+
 }

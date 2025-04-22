@@ -24,14 +24,15 @@ namespace Pixel_Walle
                 case Token.TokenType.Divide:
                     if (b != 0)
                         return a / b;
-                    
-                    //else return throw NotImplementedException();
-                    return 0;
+                    else
+                    {
+                        Errors.Add($"Error: No se puede dividir por 0 Linea: {value.Line}, Column: {value.Column}");
+                        return 0;
+                    }
                 case Token.TokenType.Module:
                     return a % b;
                 default:
                     return 0;
-
             }
         }
     }
