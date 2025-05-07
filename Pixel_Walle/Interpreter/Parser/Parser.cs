@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Pixel_Walle
 {
@@ -10,9 +11,9 @@ namespace Pixel_Walle
     {
         private Token[] Tokens { get; }
         private Token? CurrentToken { get; set; }
-        private int Index {  get; set; }
+        private int Index { get; set; }
         //Builder
-        public Parser(Token[] tokens) 
+        public Parser(Token[] tokens)
         {
             Tokens = tokens;
             CurrentToken = null;
@@ -21,7 +22,7 @@ namespace Pixel_Walle
         //Methods
         public bool ThereIsNext(int i = 1)
         {
-            if(Index + i < Tokens.Length)
+            if (Index + i < Tokens.Length)
                 return true;
             return false;
         }//Verifica si hay proximo elemento
@@ -64,6 +65,20 @@ namespace Pixel_Walle
             if (ThereIsNext())
                 CurrentToken = Tokens[++Index];
         }                // Avanza sin importar el siguiente Token
+        private void Match(params Token.TokenType?[] nextTokens)
+        {
+            foreach (Token.TokenType? item in nextTokens)
+            {
+                if (item == LookAhead()?.Type)
+                    this.CurrentToken = Tokens[++Index];
+                else
+                {
+                    Utils.Errors.Add($"Error: No se esperaba un \"{LookAhead()?.Value}\" Line: {LookAhead()?.Line}, Column: {LookAhead()?.Column}");
+                    if (ThereIsNext())
+                        this.CurrentToken = Tokens[++Index];
+                }
+            }
+        }                // Avanza en el orden de parámetros de entrada
         private Token? MatchReturn(params Token.TokenType[] nextTokens)
         {
             if (nextTokens.Length != 0)
@@ -88,7 +103,9 @@ namespace Pixel_Walle
 
             return null;
         }         // Retorna uno de los coincidentes
-        private Expression ExpressionBuilder()
+
+        //Arithmetic Expressions
+        public Expression ExpressionBuilder()
         {
             Expression expression = new Expression();
             expression.Terms = TermBuilder();
@@ -121,7 +138,7 @@ namespace Pixel_Walle
             }
             else if (LookAhead(false, Token.TokenType.OpenParan))
             {
-                Match(Token.TokenType.OpenParan);
+                Match();
                 factor.Expressions = ExpressionBuilder();
                 Match(Token.TokenType.ClosedParan);
             }
@@ -131,71 +148,219 @@ namespace Pixel_Walle
             }
             return factor;
         }
-    }
-    //Binary Expressions
-    public class Expression
-    {
-        public Token? Operator { get; set; }
-        public Expression? Expressions { get; set; }
-        public Term? Terms { get; set; }
-        public double Evaluate()
-        {
-            if (Terms != null && Expressions != null)
-            { 
-                double a = Terms.Evaluate();
-                double b = Expressions.Evaluate();
 
-                return Utils.Operation(a, b, Operator);
+        //Statements
+        public Statement StatementBuilder()
+        {
+            Statement statement = new Statement();
+
+            if (LookAhead()?.Type == Token.TokenType.OpenParan)
+            {
+                Match();
+                statement.SubState = SubStatementBuilder();
+
+                if (LookAhead(true, Token.TokenType.ClosedParan))
+                {
+                    if (LookAhead(true, Token.TokenType.AND))
+                        statement.State = StatementBuilder();
+                }
+                else if (LookAhead(true, Token.TokenType.AND))
+                {
+                    statement.State = StatementBuilder();
+                    Match(Token.TokenType.ClosedParan);
+                }
+                else Utils.Errors.Add($@"Error: Se esperaba un ')' Linea: {LookAhead()?.Line}, Columna: {LookAhead()?.Column}");
             }
             else
-                return Terms.Evaluate();
-            
-        }
-    }
-    public class Term
-    {
-        public Token? Value { get; set; }
-        public Term? Terms { get; set; }
-        public Factor? Factor { get; set; }
-
-        public double Evaluate()
-        {
-            if (Factor != null)
             {
-                if (Terms != null)
-                {
-                    double a = Factor.Evaluate();
-                    double b = Terms.Evaluate();
-
-                    return Utils.Operation(a, b, Value);
-                }
-                else
-                    return Factor.Evaluate();
-
+                statement.SubState = SubStatementBuilder();
+                if (LookAhead(true, Token.TokenType.AND))
+                    statement.State = StatementBuilder();
             }
-            return 0;
+
+            return statement;
         }
-    }
-    public class Factor
-    {
-        public Token? Value { get; set; }
-        public Expression? Expressions { get; set; }
-        public double Evaluate()
+        public SubStatement SubStatementBuilder()
         {
-            if (Value != null)
-            {
-                if (Value.Type == Token.TokenType.Digit)
-                    return double.Parse(Value.Value);
+            SubStatement subStatement = new SubStatement();
 
-                else
+            if (LookAhead()?.Type == Token.TokenType.OpenParan)
+            {
+                Match();
+                subStatement.Mol = MoleculeBuilder();
+
+                if (LookAhead(true, Token.TokenType.ClosedParan))
                 {
-                    string mensajeError = $"Error: El carácter de la línea {Value.Line} y columna {Value.Column} no se encuentra declarado o no es válido";
-                    Utils.Errors.Add(mensajeError);
-                    throw new ArgumentException(mensajeError);
+                    if (LookAhead(true, Token.TokenType.OR))
+                        subStatement.SubState = SubStatementBuilder();
+                }
+                else if (LookAhead(true, Token.TokenType.OR))
+                {
+                    subStatement.SubState = SubStatementBuilder();
+                    Match(Token.TokenType.ClosedParan);
+                }
+                else Utils.Errors.Add($@"Error: Se esperaba un ')' Linea: {LookAhead()?.Line}, Columna: {LookAhead()?.Column}");
+            }
+            else
+            {
+                subStatement.Mol = MoleculeBuilder();
+                if (LookAhead(true, Token.TokenType.OR))
+                    subStatement.SubState = SubStatementBuilder();
+            }
+
+            return subStatement;
+        }
+        public Molecule MoleculeBuilder()
+        {
+            Molecule molecule = new Molecule();
+
+            if (LookAhead()?.Type == Token.TokenType.OpenParan)
+            {
+                Match();
+                molecule.Atoms = AtomBuilder();
+
+                if (LookAhead(true, Token.TokenType.ClosedParan))
+                {
+                    if (LookAhead(false, Token.TokenType.Equal, Token.TokenType.GreaterThan, Token.TokenType.LessThan, Token.TokenType.LessThanEqual, Token.TokenType.GreaterThanEqual))
+                    {
+                        molecule.Symbol = MatchReturn();
+                        molecule.Mol = MoleculeBuilder();
+                    }
+                }
+                else if (LookAhead(false, Token.TokenType.Equal, Token.TokenType.GreaterThan, Token.TokenType.LessThan, Token.TokenType.LessThanEqual, Token.TokenType.GreaterThanEqual))
+                {
+                    molecule.Symbol = MatchReturn();
+                    molecule.Mol = MoleculeBuilder();
+                }
+                else Utils.Errors.Add($@"Error: Se esperaba un ')' Linea: {LookAhead()?.Line}, Columna: {LookAhead()?.Column}");
+            }
+            else
+            {
+                molecule.Atoms = AtomBuilder();
+
+                if (LookAhead(false, Token.TokenType.Equal, Token.TokenType.GreaterThan, Token.TokenType.LessThan, Token.TokenType.LessThanEqual, Token.TokenType.GreaterThanEqual))
+                {
+                    molecule.Symbol = MatchReturn();
+                    molecule.Mol = MoleculeBuilder();
                 }
             }
-            else return Expressions.Evaluate();
-        }
-    }
 
+            return molecule;
+        }
+        private Atom AtomBuilder()
+        {
+            if (LookAhead(false, Token.TokenType.True, Token.TokenType.False))
+                return BooleanBuilder();
+            else
+                return ExpressionBuilder();
+        }
+        public Boolean BooleanBuilder()
+        {
+            Boolean boolean = new Boolean();
+
+            boolean.Value = MatchReturn(Token.TokenType.True, Token.TokenType.False);
+
+            return boolean;
+        }
+
+        //Instructions
+        public Spawn SpawnBuilder()
+        {
+            Spawn spawn = new Spawn();
+
+            Match(Token.TokenType.Spawn);
+
+            Match(Token.TokenType.OpenParan);
+
+            spawn.X = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            Match(Token.TokenType.Comma);
+            spawn.Y = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+
+
+            Match(Token.TokenType.ClosedParan);
+
+            return spawn;
+        }
+        public Size SizeBuilder()
+        {
+            Size size = new Size();
+            Match(Token.TokenType.Size);
+
+            Match(Token.TokenType.OpenParan);
+            size.K = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+
+            Match(Token.TokenType.ClosedParan);
+
+            return size;
+        }
+        public DrawLine DrawLineBuilder()
+        {
+            DrawLine drawLine = new DrawLine();
+            Match(Token.TokenType.DrawLine);
+
+            Match(Token.TokenType.OpenParan);
+
+            drawLine.DirX = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            Match(Token.TokenType.Comma);
+            drawLine.DirY = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            Match(Token.TokenType.Comma);
+            drawLine.Distance = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+
+            Match(Token.TokenType.ClosedParan);
+
+            return drawLine;
+        }
+        public DrawCircle DrawCircleBuilder()
+        {
+            DrawCircle drawCircle = new DrawCircle();
+            Match(Token.TokenType.DrawCircle);
+
+            Match(Token.TokenType.OpenParan);
+
+            drawCircle.DirX = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            Match(Token.TokenType.Comma);
+            drawCircle.DirY = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            Match(Token.TokenType.Comma);
+            drawCircle.Radius = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+
+            Match(Token.TokenType.ClosedParan);
+
+            return drawCircle;
+        }
+        public DrawRectangle DrawRectangleBuilder()
+        {
+            DrawRectangle drawRectangle = new DrawRectangle();
+            Match(Token.TokenType.DrawRectangle);
+
+            Match(Token.TokenType.OpenParan);
+
+            drawRectangle.DirX = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            Match(Token.TokenType.Comma);
+            drawRectangle.DirY = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            Match(Token.TokenType.Comma);
+            drawRectangle.Distance = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            Match(Token.TokenType.Comma);
+            drawRectangle.Width = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            Match(Token.TokenType.Comma);
+            drawRectangle.Height = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+
+            Match(Token.TokenType.ClosedParan);
+
+            return drawRectangle;
+        }
+        public Fill FillBuilder()
+        {
+            Fill fill = new Fill();
+
+            Match(Token.TokenType.Fill);
+            Match(Token.TokenType.OpenParan);
+            Match(Token.TokenType.ClosedParan);
+
+            return fill;
+        }
+
+        //Functions
+
+
+    }
 }

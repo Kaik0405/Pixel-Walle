@@ -56,7 +56,7 @@
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Utils\\Utils.cs",
               "ToolTip": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Utils\\Utils.cs",
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Utils\\Utils.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABgAAAAUAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAuwB0AAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-19T04:36:21.488Z",
               "EditorCaption": ""
@@ -69,7 +69,7 @@
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Parser\\Parser.cs",
               "ToolTip": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Parser\\Parser.cs",
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Parser\\Parser.cs",
-              "ViewState": "AgIAAG4AAAAAAAAAAAAAAHoAAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAACEAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-19T02:21:06.28Z",
               "EditorCaption": ""
@@ -84,7 +84,8 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Lexer\\Lexer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-10T14:48:01.199Z"
+              "WhenOpened": "2025-04-10T14:48:01.199Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",

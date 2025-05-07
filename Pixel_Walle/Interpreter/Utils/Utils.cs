@@ -11,7 +11,7 @@ namespace Pixel_Walle
         public static List<string> Errors = new List<string>();
         public static double Operation(double a, double b, Token? value)
         {
-            switch (value.Type)
+            switch (value?.Type)
             {
                 case Token.TokenType.Plus:
                     return a + b;
@@ -33,6 +33,24 @@ namespace Pixel_Walle
                     return a % b;
                 default:
                     return 0;
+            }
+        }
+        public static bool Compare(double a, double b, Token? value)
+        {
+
+            switch (value?.Type)
+            {
+                case Token.TokenType.LessThan:
+                    return a < b;
+                case Token.TokenType.LessThanEqual:
+                    return a <= b;
+                case Token.TokenType.GreaterThan:
+                    return a > b;
+                case Token.TokenType.GreaterThanEqual:
+                    return a >= b;
+                case Token.TokenType.Equal:
+                    return a == b;
+                default: return false;
             }
         }
     }
