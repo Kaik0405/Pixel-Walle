@@ -272,9 +272,9 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
 
-            spawn.X = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            spawn.X = StatementBuilder();
             Match(Token.TokenType.Comma);
-            spawn.Y = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            spawn.Y = StatementBuilder();
 
 
             Match(Token.TokenType.ClosedParan);
@@ -287,7 +287,7 @@ namespace Pixel_Walle
             Match(Token.TokenType.Size);
 
             Match(Token.TokenType.OpenParan);
-            size.K = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            size.K = StatementBuilder();
 
             Match(Token.TokenType.ClosedParan);
 
@@ -300,11 +300,11 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
 
-            drawLine.DirX = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawLine.DirX = StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawLine.DirY = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawLine.DirY = StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawLine.Distance = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawLine.Distance = StatementBuilder();
 
             Match(Token.TokenType.ClosedParan);
 
@@ -317,11 +317,11 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
 
-            drawCircle.DirX = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawCircle.DirX = StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawCircle.DirY = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawCircle.DirY = StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawCircle.Radius = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawCircle.Radius = StatementBuilder();
 
             Match(Token.TokenType.ClosedParan);
 
@@ -334,15 +334,15 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
 
-            drawRectangle.DirX = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawRectangle.DirX = StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawRectangle.DirY = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawRectangle.DirY = StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawRectangle.Distance = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawRectangle.Distance = StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawRectangle.Width = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawRectangle.Width = StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawRectangle.Height = Convert.ToInt32(MatchReturn(Token.TokenType.Digit));
+            drawRectangle.Height = StatementBuilder();
 
             Match(Token.TokenType.ClosedParan);
 
@@ -358,9 +358,111 @@ namespace Pixel_Walle
 
             return fill;
         }
+        public Variable VariableBuilder()
+        {
+            Variable variable = new Variable();
+
+            variable.Name = MatchReturn(Token.TokenType.UnKnown);
+            Match(Token.TokenType.Assignment);
+            variable.Value = StatementBuilder();
+
+
+            return variable;
+        }
 
         //Functions
+        public GetActualX GetActualXBuilder()
+        {
+            GetActualX getActualX = new GetActualX();
 
+            Match(Token.TokenType.GetActualX);
+            Match(Token.TokenType.OpenParan);
+            Match(Token.TokenType.ClosedParan);
+
+            return getActualX;
+        }
+        public GetActualY GetActualYBuilder()
+        {
+            GetActualY getActualY = new GetActualY();
+
+            Match(Token.TokenType.GetActualY);
+            Match(Token.TokenType.OpenParan);
+            Match(Token.TokenType.ClosedParan);
+
+            return getActualY;
+        }
+        public GetCanvasSize GetCanvasSizeBuilder()
+        {
+            GetCanvasSize getCanvasSize = new GetCanvasSize();
+
+            Match(Token.TokenType.GetCanvasSize);
+            Match(Token.TokenType.OpenParan);
+            Match(Token.TokenType.ClosedParan);
+
+            return getCanvasSize;
+        }
+        public GetColorCount GetColorCountBuilder()
+        {
+            GetColorCount getColorCount = new GetColorCount();
+
+            Match(Token.TokenType.GetColorCount);
+
+            Match(Token.TokenType.OpenParan);
+
+            getColorCount.Color = StatementBuilder();
+            Match(Token.TokenType.Comma);
+            getColorCount.X1 = StatementBuilder();
+            Match(Token.TokenType.Comma);
+            getColorCount.Y1 = StatementBuilder();
+            Match(Token.TokenType.Comma);
+            getColorCount.X2 = StatementBuilder();
+            Match(Token.TokenType.Comma);
+            getColorCount.Y2 = StatementBuilder();
+
+            Match(Token.TokenType.ClosedParan);
+            
+            return getColorCount;
+        }
+        public IsBrushColor IsBrushColorBuilder()
+        {
+            IsBrushColor isBrushColor = new IsBrushColor();
+
+            Match(Token.TokenType.IsBrushColor);
+
+            Match(Token.TokenType.OpenParan);
+            isBrushColor.Color = StatementBuilder();
+            Match(Token.TokenType.ClosedParan);
+
+            return isBrushColor;
+        }
+        public IsBrushSize IsBrushSizeBuilder()
+        {
+            IsBrushSize isBrushSize = new IsBrushSize();
+
+            Match(Token.TokenType.IsBrushSize);
+
+            Match(Token.TokenType.OpenParan);
+            isBrushSize.Size = StatementBuilder();
+            Match(Token.TokenType.ClosedParan);
+
+            return isBrushSize;
+        }
+        public IsCanvasColor IsCanvasColorBuilder()
+        {
+            IsCanvasColor isCanvasColor = new IsCanvasColor();
+
+            Match(Token.TokenType.IsCanvasColor);
+
+            Match(Token.TokenType.OpenParan);
+            isCanvasColor.Color = StatementBuilder();
+            Match(Token.TokenType.Comma);
+            isCanvasColor.Vertical = StatementBuilder();
+            Match(Token.TokenType.Comma);
+            isCanvasColor.Horizontal = StatementBuilder();
+            Match(Token.TokenType.ClosedParan);
+
+            return isCanvasColor;
+        }
 
     }
 }

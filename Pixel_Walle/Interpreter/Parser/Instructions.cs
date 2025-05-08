@@ -11,43 +11,46 @@ namespace Pixel_Walle
     }
     public class Spawn : Instructions
     {
-        public int? X;
-        public int? Y;
-
-        
+        public Statement? X;
+        public Statement? Y;
     }
     public class Color : Instructions 
     {
-        public int? ColorString;
+        public Statement? ColorString;
     }
     public class Size : Instructions
     {
-        public int? K;
+        public Statement? K;
     }
     public class DrawLine : Instructions 
     {
-        public int? DirX;
-        public int? DirY;
-        public int? Distance;
+        public Statement? DirX;
+        public Statement? DirY;
+        public Statement? Distance;
 
     }
     public class DrawCircle : Instructions
     {
-        public int? DirX;
-        public int? DirY;
-        public int? Radius;
+        public Statement? DirX;
+        public Statement? DirY;
+        public Statement? Radius;
         
     }
     public class DrawRectangle : Instructions
     {
-        public int? DirX;
-        public int? DirY;
-        public int? Distance;
-        public int? Width;
-        public int? Height;
+        public Statement? DirX;
+        public Statement? DirY;
+        public Statement? Distance;
+        public Statement? Width;
+        public Statement? Height;
     }
     public class Fill : Instructions
     {
 
+    }
+    public class Variable : Instructions
+    {
+        public Token? Name;
+        public Statement? Value;
     }
 }

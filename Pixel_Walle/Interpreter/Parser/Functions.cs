@@ -16,26 +16,32 @@ namespace Pixel_Walle
     }
     public class GetActualY 
     {
-        
+           
     }
     public class GetCanvasSize
     {
-
+        
     }
     public class GetColorCount
     {
-
+        public Statement? Color;
+        public Statement? X1;
+        public Statement? Y1;
+        public Statement? X2;
+        public Statement? Y2;
+    }
+    public class IsBrushColor
+    {
+        public Statement? Color;
     }
     public class IsBrushSize
     {
-
+        public Statement? Size;
     }
     public class IsCanvasColor
     {
-
-    }
-    public class IsColor
-    {
-
+        public Statement? Color;
+        public Statement? Vertical;
+        public Statement? Horizontal;
     }
 }
