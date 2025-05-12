@@ -7,8 +7,18 @@ using System.Threading.Tasks;
 namespace Pixel_Walle
 {
     public static class Utils
-    {
+    {   
         public static List<string> Errors = new List<string>();
+        public static List<Token.TokenType> FunctionList = new List<Token.TokenType>
+        {
+            Token.TokenType.GetActualX,
+            Token.TokenType.GetActualY,
+            Token.TokenType.GetCanvasSize,
+            Token.TokenType.GetColorCount,
+            Token.TokenType.IsBrushColor,
+            Token.TokenType.IsBrushSize,
+            Token.TokenType.IsCanvasColor,
+        };
         public static double Operation(double a, double b, Token? value)
         {
             switch (value?.Type)

@@ -50,7 +50,17 @@ namespace Pixel_Walle
     }
     public class Variable : Instructions
     {
-        public Token? Name;
+        public string? Name;
         public Statement? Value;
+    }
+    public class  GoTo : Instructions
+    {
+        public Statement? Condition;
+        public Label? Label;
+    }
+    public class Label : Instructions
+    {
+        public string? Name;
+        public int LineNumber;
     }
 }

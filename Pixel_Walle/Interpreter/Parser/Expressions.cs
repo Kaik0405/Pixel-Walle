@@ -56,6 +56,8 @@ namespace Pixel_Walle
     public class Factor
     {
         public Token? Value { get; set; }
+        public Variable? Variable { get; set; }
+        public Functions? Functions { get; set; }
         public Expression? Expressions { get; set; }
         public object? Evaluate()
         {

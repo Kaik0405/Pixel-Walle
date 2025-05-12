@@ -10,19 +10,19 @@ namespace Pixel_Walle
     {
 
     }
-    public class GetActualX
+    public class GetActualX : Functions
     {
 
     }
-    public class GetActualY 
+    public class GetActualY : Functions
     {
            
     }
-    public class GetCanvasSize
+    public class GetCanvasSize : Functions
     {
         
     }
-    public class GetColorCount
+    public class GetColorCount : Functions
     {
         public Statement? Color;
         public Statement? X1;
@@ -30,15 +30,15 @@ namespace Pixel_Walle
         public Statement? X2;
         public Statement? Y2;
     }
-    public class IsBrushColor
+    public class IsBrushColor : Functions
     {
         public Statement? Color;
     }
-    public class IsBrushSize
+    public class IsBrushSize : Functions
     {
         public Statement? Size;
     }
-    public class IsCanvasColor
+    public class IsCanvasColor : Functions
     {
         public Statement? Color;
         public Statement? Vertical;

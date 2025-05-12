@@ -104,6 +104,43 @@ namespace Pixel_Walle
             return null;
         }         // Retorna uno de los coincidentes
 
+        //ProgramCompiler
+        public ProgramCompiler Parsing()
+        {
+            ProgramCompiler programCompiler = new ProgramCompiler();
+            SpawnBuilder();
+
+            while (Index < Tokens.Length)
+                programCompiler.Instructions.Add(InstructionsBuilder());
+            
+            return programCompiler;
+        }
+        public Instructions InstructionsBuilder()
+        {
+            if (LookAhead(false, Token.TokenType.Size))
+                return SizeBuilder();
+            else if (LookAhead(false, Token.TokenType.DrawLine))
+                return DrawLineBuilder();
+            else if (LookAhead(false, Token.TokenType.DrawCircle))
+                return DrawCircleBuilder();
+            else if (LookAhead(false, Token.TokenType.DrawRectangle))
+                return DrawRectangleBuilder();
+            else if (LookAhead(false, Token.TokenType.Fill))
+                return FillBuilder();
+            else if (LookAhead(false, Token.TokenType.GoTo))
+                return GoToBuilder();
+            else
+            {
+                if (LookAhead(false, Token.TokenType.UnKnown))
+                {
+                    for (int i = 2; i < Tokens.Length; i++)
+                        if (Tokens[Index + i].Type == Token.TokenType.Assignment)
+                            return VariableBuilder();
+                }
+                return LabelBuilder();
+            }
+        }
+
         //Arithmetic Expressions
         public Expression ExpressionBuilder()
         {
@@ -118,7 +155,7 @@ namespace Pixel_Walle
 
             return expression;
         }
-        private Term TermBuilder()
+        public Term TermBuilder()
         {
             Term term = new Term();
             term.Factor = FactorBuilder();
@@ -129,14 +166,11 @@ namespace Pixel_Walle
             }
             return term;
         }
-        private Factor FactorBuilder()
+        public Factor FactorBuilder()
         {
             Factor factor = new Factor();
-            if (LookAhead(false, Token.TokenType.Digit))
-            {
-                factor.Value = MatchReturn();
-            }
-            else if (LookAhead(false, Token.TokenType.OpenParan))
+            
+            if (LookAhead(false, Token.TokenType.OpenParan))
             {
                 Match();
                 factor.Expressions = ExpressionBuilder();
@@ -144,7 +178,14 @@ namespace Pixel_Walle
             }
             else
             {
-                //variable implementation
+                if (LookAhead(false, Token.TokenType.Digit))
+                    factor.Value = MatchReturn();
+                
+                else if (LookAhead(false, Token.TokenType.UnKnown))
+                    factor.Variable = VariableOfValueBuilder();
+
+                else if (Utils.FunctionList.Contains(LookAhead().Type))
+                    factor.Functions = GetActualXBuilder();
             }
             return factor;
         }
@@ -154,29 +195,9 @@ namespace Pixel_Walle
         {
             Statement statement = new Statement();
 
-            if (LookAhead()?.Type == Token.TokenType.OpenParan)
-            {
-                Match();
-                statement.SubState = SubStatementBuilder();
-
-                if (LookAhead(true, Token.TokenType.ClosedParan))
-                {
-                    if (LookAhead(true, Token.TokenType.AND))
-                        statement.State = StatementBuilder();
-                }
-                else if (LookAhead(true, Token.TokenType.AND))
-                {
-                    statement.State = StatementBuilder();
-                    Match(Token.TokenType.ClosedParan);
-                }
-                else Utils.Errors.Add($@"Error: Se esperaba un ')' Linea: {LookAhead()?.Line}, Columna: {LookAhead()?.Column}");
-            }
-            else
-            {
-                statement.SubState = SubStatementBuilder();
-                if (LookAhead(true, Token.TokenType.AND))
-                    statement.State = StatementBuilder();
-            }
+            statement.SubState = SubStatementBuilder();
+            if (LookAhead(true, Token.TokenType.AND))
+                statement.State = StatementBuilder();
 
             return statement;
         }
@@ -184,29 +205,9 @@ namespace Pixel_Walle
         {
             SubStatement subStatement = new SubStatement();
 
-            if (LookAhead()?.Type == Token.TokenType.OpenParan)
-            {
-                Match();
-                subStatement.Mol = MoleculeBuilder();
-
-                if (LookAhead(true, Token.TokenType.ClosedParan))
-                {
-                    if (LookAhead(true, Token.TokenType.OR))
-                        subStatement.SubState = SubStatementBuilder();
-                }
-                else if (LookAhead(true, Token.TokenType.OR))
-                {
-                    subStatement.SubState = SubStatementBuilder();
-                    Match(Token.TokenType.ClosedParan);
-                }
-                else Utils.Errors.Add($@"Error: Se esperaba un ')' Linea: {LookAhead()?.Line}, Columna: {LookAhead()?.Column}");
-            }
-            else
-            {
-                subStatement.Mol = MoleculeBuilder();
-                if (LookAhead(true, Token.TokenType.OR))
-                    subStatement.SubState = SubStatementBuilder();
-            }
+            subStatement.Mol = MoleculeBuilder();
+            if (LookAhead(true, Token.TokenType.OR))
+                subStatement.SubState = SubStatementBuilder();
 
             return subStatement;
         }
@@ -214,40 +215,17 @@ namespace Pixel_Walle
         {
             Molecule molecule = new Molecule();
 
-            if (LookAhead()?.Type == Token.TokenType.OpenParan)
-            {
-                Match();
-                molecule.Atoms = AtomBuilder();
+            molecule.Atoms = AtomBuilder();
 
-                if (LookAhead(true, Token.TokenType.ClosedParan))
-                {
-                    if (LookAhead(false, Token.TokenType.Equal, Token.TokenType.GreaterThan, Token.TokenType.LessThan, Token.TokenType.LessThanEqual, Token.TokenType.GreaterThanEqual))
-                    {
-                        molecule.Symbol = MatchReturn();
-                        molecule.Mol = MoleculeBuilder();
-                    }
-                }
-                else if (LookAhead(false, Token.TokenType.Equal, Token.TokenType.GreaterThan, Token.TokenType.LessThan, Token.TokenType.LessThanEqual, Token.TokenType.GreaterThanEqual))
-                {
-                    molecule.Symbol = MatchReturn();
-                    molecule.Mol = MoleculeBuilder();
-                }
-                else Utils.Errors.Add($@"Error: Se esperaba un ')' Linea: {LookAhead()?.Line}, Columna: {LookAhead()?.Column}");
-            }
-            else
+            if (LookAhead(false, Token.TokenType.Equal, Token.TokenType.GreaterThan, Token.TokenType.LessThan, Token.TokenType.LessThanEqual, Token.TokenType.GreaterThanEqual))
             {
-                molecule.Atoms = AtomBuilder();
-
-                if (LookAhead(false, Token.TokenType.Equal, Token.TokenType.GreaterThan, Token.TokenType.LessThan, Token.TokenType.LessThanEqual, Token.TokenType.GreaterThanEqual))
-                {
-                    molecule.Symbol = MatchReturn();
-                    molecule.Mol = MoleculeBuilder();
-                }
+                molecule.Symbol = MatchReturn();
+                molecule.Mol = MoleculeBuilder();
             }
 
             return molecule;
         }
-        private Atom AtomBuilder()
+        public Atom AtomBuilder()
         {
             if (LookAhead(false, Token.TokenType.True, Token.TokenType.False))
                 return BooleanBuilder();
@@ -362,10 +340,33 @@ namespace Pixel_Walle
         {
             Variable variable = new Variable();
 
-            variable.Name = MatchReturn(Token.TokenType.UnKnown);
-            Match(Token.TokenType.Assignment);
+            if (LookAhead(false, Token.TokenType.UnKnown)) 
+                variable.Name = MatchReturn()?.ToString();
+            
+            
+            while (!LookAhead(false, Token.TokenType.Assignment))
+            {
+                if (LookAhead(false, Token.TokenType.Minus))
+                    variable.Name += MatchReturn()?.ToString();
+                
+                variable.Name += MatchReturn(Token.TokenType.UnKnown)?.ToString();
+            }
+            Match();
             variable.Value = StatementBuilder();
 
+            return variable;
+        }
+        public Variable VariableOfValueBuilder()
+        {
+            Variable variable = new Variable();
+            do
+            {
+                variable.Name += Token.TokenType.UnKnown.ToString();
+
+                if (LookAhead(false, Token.TokenType.Minus))
+                    variable.Name += Token.TokenType.Minus.ToString();
+
+            } while (LookAhead(true, Token.TokenType.Minus));
 
             return variable;
         }
@@ -420,7 +421,7 @@ namespace Pixel_Walle
             getColorCount.Y2 = StatementBuilder();
 
             Match(Token.TokenType.ClosedParan);
-            
+
             return getColorCount;
         }
         public IsBrushColor IsBrushColorBuilder()
@@ -464,5 +465,34 @@ namespace Pixel_Walle
             return isCanvasColor;
         }
 
+        //GoTo
+        private GoTo GoToBuilder()
+        {
+            GoTo goTo = new GoTo();
+
+            Match(Token.TokenType.GoTo);
+            Match(Token.TokenType.OpenBracket);
+            goTo.Label = LabelBuilder();
+            Match(Token.TokenType.ClosedBracket);
+            Match(Token.TokenType.OpenParan);
+            goTo.Condition = StatementBuilder();
+            Match(Token.TokenType.ClosedParan);
+
+            return goTo;
+        }
+        public Label LabelBuilder()
+        {
+            Label label = new Label();
+            do
+            {
+                label.Name+= Token.TokenType.UnKnown.ToString();
+                
+                if(LookAhead(false,Token.TokenType.Minus)) 
+                    label.Name += Token.TokenType.Minus.ToString();
+
+            } while (LookAhead(true, Token.TokenType.Minus));
+
+            return label;
+        }
     }
 }
