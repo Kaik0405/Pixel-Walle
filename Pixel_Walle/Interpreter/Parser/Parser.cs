@@ -176,7 +176,7 @@ namespace Pixel_Walle
                 factor.Expressions = ExpressionBuilder();
                 Match(Token.TokenType.ClosedParan);
             }
-            else
+            else    // hard-pes-caado <- 
             {
                 if (LookAhead(false, Token.TokenType.Digit))
                     factor.Value = MatchReturn();
