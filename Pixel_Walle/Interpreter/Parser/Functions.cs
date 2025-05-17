@@ -24,7 +24,7 @@ namespace Pixel_Walle
     }
     public class GetColorCount : Functions
     {
-        public Statement? Color;
+        public Token? Color;
         public Statement? X1;
         public Statement? Y1;
         public Statement? X2;
@@ -32,7 +32,7 @@ namespace Pixel_Walle
     }
     public class IsBrushColor : Functions
     {
-        public Statement? Color;
+        public Token? Color;
     }
     public class IsBrushSize : Functions
     {
@@ -40,7 +40,7 @@ namespace Pixel_Walle
     }
     public class IsCanvasColor : Functions
     {
-        public Statement? Color;
+        public Token? Color;
         public Statement? Vertical;
         public Statement? Horizontal;
     }

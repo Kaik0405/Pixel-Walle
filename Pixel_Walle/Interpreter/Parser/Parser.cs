@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -176,13 +177,13 @@ namespace Pixel_Walle
                 factor.Expressions = ExpressionBuilder();
                 Match(Token.TokenType.ClosedParan);
             }
-            else    // hard-pes-caado <- 
+            else
             {
                 if (LookAhead(false, Token.TokenType.Digit))
                     factor.Value = MatchReturn();
-                
+
                 else if (LookAhead(false, Token.TokenType.UnKnown))
-                    factor.Variable = VariableOfValueBuilder();
+                    factor.Variable = MatchReturn(Token.TokenType.UnKnown);
 
                 else if (Utils.FunctionList.Contains(LookAhead().Type))
                     factor.Functions = GetActualXBuilder();
@@ -340,35 +341,25 @@ namespace Pixel_Walle
         {
             Variable variable = new Variable();
 
-            if (LookAhead(false, Token.TokenType.UnKnown)) 
-                variable.Name = MatchReturn()?.ToString();
-            
-            
-            while (!LookAhead(false, Token.TokenType.Assignment))
-            {
-                if (LookAhead(false, Token.TokenType.Minus))
-                    variable.Name += MatchReturn()?.ToString();
-                
-                variable.Name += MatchReturn(Token.TokenType.UnKnown)?.ToString();
-            }
-            Match();
+            variable.Name = MatchReturn(Token.TokenType.UnKnown);
+            Match(Token.TokenType.Assignment);
             variable.Value = StatementBuilder();
 
             return variable;
         }
-        public Variable VariableOfValueBuilder()
+        public Color ColorBuilder()
         {
-            Variable variable = new Variable();
-            do
-            {
-                variable.Name += Token.TokenType.UnKnown.ToString();
+            Color color = new Color();
 
-                if (LookAhead(false, Token.TokenType.Minus))
-                    variable.Name += Token.TokenType.Minus.ToString();
+            Match(Token.TokenType.Color);
+            Match(Token.TokenType.OpenParan);
+            Match(Token.TokenType.Quote);
+            color.Value = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow, 
+                Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
+            Match(Token.TokenType.Quote);
+            Match(Token.TokenType.ClosedParan);
 
-            } while (LookAhead(true, Token.TokenType.Minus));
-
-            return variable;
+            return color;
         }
 
         //Functions
@@ -410,7 +401,11 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
 
-            getColorCount.Color = StatementBuilder();
+            Match(Token.TokenType.Quote);
+            getColorCount.Color = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
+                Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
+            Match(Token.TokenType.Quote);
+
             Match(Token.TokenType.Comma);
             getColorCount.X1 = StatementBuilder();
             Match(Token.TokenType.Comma);
@@ -431,7 +426,10 @@ namespace Pixel_Walle
             Match(Token.TokenType.IsBrushColor);
 
             Match(Token.TokenType.OpenParan);
-            isBrushColor.Color = StatementBuilder();
+            Match(Token.TokenType.Quote);
+            isBrushColor.Color = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
+                Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
+            Match(Token.TokenType.Quote);
             Match(Token.TokenType.ClosedParan);
 
             return isBrushColor;
@@ -455,7 +453,12 @@ namespace Pixel_Walle
             Match(Token.TokenType.IsCanvasColor);
 
             Match(Token.TokenType.OpenParan);
-            isCanvasColor.Color = StatementBuilder();
+
+            Match(Token.TokenType.Quote);
+            isCanvasColor.Color = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
+                Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
+            Match(Token.TokenType.Quote);
+
             Match(Token.TokenType.Comma);
             isCanvasColor.Vertical = StatementBuilder();
             Match(Token.TokenType.Comma);
@@ -472,7 +475,7 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.GoTo);
             Match(Token.TokenType.OpenBracket);
-            goTo.Label = LabelBuilder();
+            goTo.Label = MatchReturn(Token.TokenType.UnKnown);
             Match(Token.TokenType.ClosedBracket);
             Match(Token.TokenType.OpenParan);
             goTo.Condition = StatementBuilder();
@@ -483,14 +486,8 @@ namespace Pixel_Walle
         public Label LabelBuilder()
         {
             Label label = new Label();
-            do
-            {
-                label.Name+= Token.TokenType.UnKnown.ToString();
-                
-                if(LookAhead(false,Token.TokenType.Minus)) 
-                    label.Name += Token.TokenType.Minus.ToString();
 
-            } while (LookAhead(true, Token.TokenType.Minus));
+            label.Value = MatchReturn(Token.TokenType.UnKnown);
 
             return label;
         }

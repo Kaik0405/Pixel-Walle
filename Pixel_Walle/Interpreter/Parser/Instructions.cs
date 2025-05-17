@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace Pixel_Walle
 {
@@ -16,7 +17,7 @@ namespace Pixel_Walle
     }
     public class Color : Instructions 
     {
-        public Statement? ColorString;
+        public Token? Value;
     }
     public class Size : Instructions
     {
@@ -50,17 +51,17 @@ namespace Pixel_Walle
     }
     public class Variable : Instructions
     {
-        public string? Name;
+        public Token? Name;
         public Statement? Value;
     }
     public class  GoTo : Instructions
     {
         public Statement? Condition;
-        public Label? Label;
+        public Token? Label;
     }
     public class Label : Instructions
     {
-        public string? Name;
+        public Token? Value;
         public int LineNumber;
     }
 }
