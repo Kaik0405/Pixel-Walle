@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pixel_Walle;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,10 +13,10 @@ namespace Pixel_Walle
     }
     public class Spawn : Instructions
     {
-        public Statement? X;
-        public Statement? Y;
+        public Token? X;
+        public Token? Y;
     }
-    public class Color : Instructions 
+    public class Color : Instructions
     {
         public Token? Value;
     }
@@ -23,7 +24,7 @@ namespace Pixel_Walle
     {
         public Statement? K;
     }
-    public class DrawLine : Instructions 
+    public class DrawLine : Instructions
     {
         public Statement? DirX;
         public Statement? DirY;
@@ -35,7 +36,7 @@ namespace Pixel_Walle
         public Statement? DirX;
         public Statement? DirY;
         public Statement? Radius;
-        
+
     }
     public class DrawRectangle : Instructions
     {
@@ -54,7 +55,7 @@ namespace Pixel_Walle
         public Token? Name;
         public Statement? Value;
     }
-    public class  GoTo : Instructions
+    public class GoTo : Instructions
     {
         public Statement? Condition;
         public Token? Label;
@@ -62,6 +63,6 @@ namespace Pixel_Walle
     public class Label : Instructions
     {
         public Token? Value;
-        public int LineNumber;
+        public List<Instructions?> Instructions = new List<Instructions?>();
     }
 }

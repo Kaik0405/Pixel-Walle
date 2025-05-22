@@ -29,6 +29,7 @@ namespace Pixel_Walle
             IsBrushColor,
             IsBrushSize,
             IsCanvasColor,
+            IsColor,
 
             // Símbolos
             OpenParan,        // ( 

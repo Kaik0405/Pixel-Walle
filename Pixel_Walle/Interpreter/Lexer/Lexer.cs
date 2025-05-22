@@ -27,6 +27,7 @@ namespace Pixel_Walle
             {"IsBrushColor",Token.TokenType.IsBrushColor},
             {"IsBrushSize",Token.TokenType.IsBrushSize},
             {"IsCanvasColor",Token.TokenType.IsCanvasColor},
+            {"IsColor",Token.TokenType.IsColor},
 
             //Colors
             {"Red",Token.TokenType.Red},

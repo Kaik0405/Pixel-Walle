@@ -5,8 +5,41 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pixel_Walle"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="PIXEL WALL-E" Height="600" Width="1000">
     <Grid>
+        <!-- Definimos las filas y columnas del Grid -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
 
+        <!-- Editor de texto con números de línea -->
+        <DockPanel Grid.Row="1" Grid.Column="0" Margin="10">
+            <TextBox Name="CodeEditor" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="14" TextWrapping="Wrap" />
+        </DockPanel>
+
+        <!-- Canvas cuadriculado -->
+        <ScrollViewer Grid.Row="1" Grid.Column="1" Margin="10">
+            <Grid Name="CanvasGrid" Background="White" ShowGridLines="False">
+                <!-- Las filas y columnas del canvas se generarán dinámicamente en el código detrás -->
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Controles superiores -->
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <TextBlock Text="Dimensiones del Canvas:" VerticalAlignment="Center" Margin="5" />
+            <TextBox Name="CanvasWidthInput" Width="50" Margin="5" Text="10" />
+            <TextBlock Text="x" VerticalAlignment="Center" Margin="5" />
+            <TextBox Name="CanvasHeightInput" Width="50" Margin="5" Text="10" />
+            <Button Name="ResizeCanvasButton" Content="Redimensionar Canvas" Margin="5" Width="150" Click="ResizeCanvasButton_Click" />
+            <Button Name="ExecuteCodeButton" Content="Ejecutar Código" Margin="5" Width="120" Click="Execute" />
+            <Button Name="LoadFileButton" Content="Cargar Archivo" Margin="5" Width="120" />
+            <Button Name="SaveFileButton" Content="Guardar Archivo" Margin="5" Width="120" />
+        </StackPanel>
     </Grid>
 </Window>
+

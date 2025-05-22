@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pixel_Walle;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -74,7 +75,7 @@ namespace Pixel_Walle
                     this.CurrentToken = Tokens[++Index];
                 else
                 {
-                    Utils.Errors.Add($"Error: No se esperaba un \"{LookAhead()?.Value}\" Line: {LookAhead()?.Line}, Column: {LookAhead()?.Column}");
+                    Utils.Errors.Add($"Error Sintáctico: No se esperaba un \"{LookAhead()?.Value}\" Line: {LookAhead()?.Line}, Column: {LookAhead()?.Column}");
                     if (ThereIsNext())
                         this.CurrentToken = Tokens[++Index];
                 }
@@ -92,7 +93,7 @@ namespace Pixel_Walle
                         return CurrentToken;
                     }
                 }
-                Utils.Errors.Add($"Error: No se esperaba un \"{LookAhead()?.Value}\" Line: {LookAhead()?.Line}, Column: {LookAhead()?.Column}");
+                Utils.Errors.Add($"Error Sintáctico: No se esperaba un \"{LookAhead()?.Value}\" Line: {LookAhead()?.Line}, Column: {LookAhead()?.Column}");
                 if (ThereIsNext())
                     this.CurrentToken = Tokens[++Index];
             }
@@ -109,41 +110,72 @@ namespace Pixel_Walle
         public ProgramCompiler Parsing()
         {
             ProgramCompiler programCompiler = new ProgramCompiler();
-            SpawnBuilder();
 
-            while (Index < Tokens.Length)
-                programCompiler.Instructions.Add(InstructionsBuilder());
-            
-            return programCompiler;
-        }
-        public Instructions InstructionsBuilder()
-        {
-            if (LookAhead(false, Token.TokenType.Size))
-                return SizeBuilder();
-            else if (LookAhead(false, Token.TokenType.DrawLine))
-                return DrawLineBuilder();
-            else if (LookAhead(false, Token.TokenType.DrawCircle))
-                return DrawCircleBuilder();
-            else if (LookAhead(false, Token.TokenType.DrawRectangle))
-                return DrawRectangleBuilder();
-            else if (LookAhead(false, Token.TokenType.Fill))
-                return FillBuilder();
-            else if (LookAhead(false, Token.TokenType.GoTo))
-                return GoToBuilder();
-            else
+            if (LookAhead()?.Type == Token.TokenType.Spawn)
+                programCompiler.Instructions.Add(SpawnBuilder());
+            else Utils.Errors.Add("Error Sintáctico: No existe el Spawn al principio del código");
+
+            while (Index < Tokens.Length - 1)
             {
                 if (LookAhead(false, Token.TokenType.UnKnown))
                 {
-                    for (int i = 2; i < Tokens.Length; i++)
-                        if (Tokens[Index + i].Type == Token.TokenType.Assignment)
-                            return VariableBuilder();
+                    if (Index + 2 < Tokens.Length)
+                    {
+                        if (Tokens[Index + 2].Type == Token.TokenType.Assignment)
+                            programCompiler.Instructions.Add(VariableBuilder());
+                        else
+                        {
+                            int aux = Index;
+                            programCompiler.Instructions.Add(LabelBuilder());
+                            Index = aux + 1;
+                        }
+                    }
+                    else
+                    {
+                        int aux = Index;
+                        programCompiler.Instructions.Add(LabelBuilder());
+                        Index = aux + 1;
+                    };
                 }
-                return LabelBuilder();
+                else
+                    programCompiler.Instructions.Add(InstructionsBuilder());
+
+            }
+            return programCompiler;
+        }
+        private Instructions? InstructionsBuilder()
+        {
+            if (LookAhead(false, Token.TokenType.Size))
+                return SizeBuilder();
+
+            else if (LookAhead(false, Token.TokenType.Color))
+                return ColorBuilder();
+
+            else if (LookAhead(false, Token.TokenType.DrawLine))
+                return DrawLineBuilder();
+
+            else if (LookAhead(false, Token.TokenType.DrawCircle))
+                return DrawCircleBuilder();
+
+            else if (LookAhead(false, Token.TokenType.DrawRectangle))
+                return DrawRectangleBuilder();
+
+            else if (LookAhead(false, Token.TokenType.Fill))
+                return FillBuilder();
+
+            else if (LookAhead(false, Token.TokenType.GoTo))
+                return GoToBuilder();
+
+            else
+            {
+                Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+                Index++;
+                return null;
             }
         }
 
         //Arithmetic Expressions
-        public Expression ExpressionBuilder()
+        private Expression ExpressionBuilder()
         {
             Expression expression = new Expression();
             expression.Terms = TermBuilder();
@@ -156,7 +188,7 @@ namespace Pixel_Walle
 
             return expression;
         }
-        public Term TermBuilder()
+        private Term TermBuilder()
         {
             Term term = new Term();
             term.Factor = FactorBuilder();
@@ -167,10 +199,10 @@ namespace Pixel_Walle
             }
             return term;
         }
-        public Factor FactorBuilder()
+        private Factor FactorBuilder()
         {
             Factor factor = new Factor();
-            
+
             if (LookAhead(false, Token.TokenType.OpenParan))
             {
                 Match();
@@ -186,13 +218,13 @@ namespace Pixel_Walle
                     factor.Variable = MatchReturn(Token.TokenType.UnKnown);
 
                 else if (Utils.FunctionList.Contains(LookAhead().Type))
-                    factor.Functions = GetActualXBuilder();
+                    factor.Functions = FunctionBuilder();
             }
             return factor;
         }
 
         //Statements
-        public Statement StatementBuilder()
+        private Statement StatementBuilder()
         {
             Statement statement = new Statement();
 
@@ -202,7 +234,7 @@ namespace Pixel_Walle
 
             return statement;
         }
-        public SubStatement SubStatementBuilder()
+        private SubStatement SubStatementBuilder()
         {
             SubStatement subStatement = new SubStatement();
 
@@ -212,7 +244,7 @@ namespace Pixel_Walle
 
             return subStatement;
         }
-        public Molecule MoleculeBuilder()
+        private Molecule MoleculeBuilder()
         {
             Molecule molecule = new Molecule();
 
@@ -226,14 +258,14 @@ namespace Pixel_Walle
 
             return molecule;
         }
-        public Atom AtomBuilder()
+        private Atom AtomBuilder()
         {
             if (LookAhead(false, Token.TokenType.True, Token.TokenType.False))
                 return BooleanBuilder();
             else
                 return ExpressionBuilder();
         }
-        public Boolean BooleanBuilder()
+        private Boolean BooleanBuilder()
         {
             Boolean boolean = new Boolean();
 
@@ -243,7 +275,7 @@ namespace Pixel_Walle
         }
 
         //Instructions
-        public Spawn SpawnBuilder()
+        private Spawn SpawnBuilder()
         {
             Spawn spawn = new Spawn();
 
@@ -251,16 +283,17 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
 
-            spawn.X = StatementBuilder();
+            spawn.X = MatchReturn(Token.TokenType.Digit);
             Match(Token.TokenType.Comma);
-            spawn.Y = StatementBuilder();
+            spawn.Y = MatchReturn(Token.TokenType.Digit);
 
-
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return spawn;
         }
-        public Size SizeBuilder()
+        private Size SizeBuilder()
         {
             Size size = new Size();
             Match(Token.TokenType.Size);
@@ -268,11 +301,13 @@ namespace Pixel_Walle
             Match(Token.TokenType.OpenParan);
             size.K = StatementBuilder();
 
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return size;
         }
-        public DrawLine DrawLineBuilder()
+        private DrawLine DrawLineBuilder()
         {
             DrawLine drawLine = new DrawLine();
             Match(Token.TokenType.DrawLine);
@@ -285,11 +320,13 @@ namespace Pixel_Walle
             Match(Token.TokenType.Comma);
             drawLine.Distance = StatementBuilder();
 
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return drawLine;
         }
-        public DrawCircle DrawCircleBuilder()
+        private DrawCircle DrawCircleBuilder()
         {
             DrawCircle drawCircle = new DrawCircle();
             Match(Token.TokenType.DrawCircle);
@@ -302,11 +339,13 @@ namespace Pixel_Walle
             Match(Token.TokenType.Comma);
             drawCircle.Radius = StatementBuilder();
 
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return drawCircle;
         }
-        public DrawRectangle DrawRectangleBuilder()
+        private DrawRectangle DrawRectangleBuilder()
         {
             DrawRectangle drawRectangle = new DrawRectangle();
             Match(Token.TokenType.DrawRectangle);
@@ -323,21 +362,25 @@ namespace Pixel_Walle
             Match(Token.TokenType.Comma);
             drawRectangle.Height = StatementBuilder();
 
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return drawRectangle;
         }
-        public Fill FillBuilder()
+        private Fill FillBuilder()
         {
             Fill fill = new Fill();
 
             Match(Token.TokenType.Fill);
             Match(Token.TokenType.OpenParan);
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return fill;
         }
-        public Variable VariableBuilder()
+        private Variable VariableBuilder()
         {
             Variable variable = new Variable();
 
@@ -347,53 +390,83 @@ namespace Pixel_Walle
 
             return variable;
         }
-        public Color ColorBuilder()
+        private Color ColorBuilder()
         {
             Color color = new Color();
 
             Match(Token.TokenType.Color);
             Match(Token.TokenType.OpenParan);
             Match(Token.TokenType.Quote);
-            color.Value = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow, 
+
+            color.Value = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
                 Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
             Match(Token.TokenType.Quote);
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return color;
         }
 
         //Functions
-        public GetActualX GetActualXBuilder()
+        private Functions? FunctionBuilder()
+        {
+            if (LookAhead()?.Type == Token.TokenType.GetActualX)
+                return GetActualXBuilder();
+            else if (LookAhead()?.Type == Token.TokenType.GetActualY)
+                return GetActualYBuilder();
+            else if (LookAhead()?.Type == Token.TokenType.GetCanvasSize)
+                return GetCanvasSizeBuilder();
+            else if (LookAhead()?.Type == Token.TokenType.GetColorCount)
+                return GetColorCountBuilder();
+            else if (LookAhead()?.Type == Token.TokenType.IsBrushColor)
+                return IsBrushColorBuilder();
+            else if (LookAhead()?.Type == Token.TokenType.IsBrushSize)
+                return IsBrushSizeBuilder();
+            else if (LookAhead()?.Type == Token.TokenType.IsCanvasColor)
+                return IsCanvasColorBuilder();
+            else if (LookAhead()?.Type == Token.TokenType.IsColor)
+                return IsColorBuilder();
+
+            return null;
+        }
+        private GetActualX GetActualXBuilder()
         {
             GetActualX getActualX = new GetActualX();
 
             Match(Token.TokenType.GetActualX);
             Match(Token.TokenType.OpenParan);
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return getActualX;
         }
-        public GetActualY GetActualYBuilder()
+        private GetActualY GetActualYBuilder()
         {
             GetActualY getActualY = new GetActualY();
 
             Match(Token.TokenType.GetActualY);
             Match(Token.TokenType.OpenParan);
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return getActualY;
         }
-        public GetCanvasSize GetCanvasSizeBuilder()
+        private GetCanvasSize GetCanvasSizeBuilder()
         {
             GetCanvasSize getCanvasSize = new GetCanvasSize();
 
             Match(Token.TokenType.GetCanvasSize);
             Match(Token.TokenType.OpenParan);
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return getCanvasSize;
         }
-        public GetColorCount GetColorCountBuilder()
+        private GetColorCount GetColorCountBuilder()
         {
             GetColorCount getColorCount = new GetColorCount();
 
@@ -415,11 +488,13 @@ namespace Pixel_Walle
             Match(Token.TokenType.Comma);
             getColorCount.Y2 = StatementBuilder();
 
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return getColorCount;
         }
-        public IsBrushColor IsBrushColorBuilder()
+        private IsBrushColor IsBrushColorBuilder()
         {
             IsBrushColor isBrushColor = new IsBrushColor();
 
@@ -430,11 +505,13 @@ namespace Pixel_Walle
             isBrushColor.Color = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
                 Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
             Match(Token.TokenType.Quote);
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return isBrushColor;
         }
-        public IsBrushSize IsBrushSizeBuilder()
+        private IsBrushSize IsBrushSizeBuilder()
         {
             IsBrushSize isBrushSize = new IsBrushSize();
 
@@ -442,11 +519,13 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
             isBrushSize.Size = StatementBuilder();
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return isBrushSize;
         }
-        public IsCanvasColor IsCanvasColorBuilder()
+        private IsCanvasColor IsCanvasColorBuilder()
         {
             IsCanvasColor isCanvasColor = new IsCanvasColor();
 
@@ -463,9 +542,30 @@ namespace Pixel_Walle
             isCanvasColor.Vertical = StatementBuilder();
             Match(Token.TokenType.Comma);
             isCanvasColor.Horizontal = StatementBuilder();
-            Match(Token.TokenType.ClosedParan);
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return isCanvasColor;
+        }
+        private IsColor IsColorBuilder()
+        {
+            IsColor isColor = new IsColor();
+
+            Match(Token.TokenType.IsColor);
+            Match(Token.TokenType.OpenParan);
+            Match(Token.TokenType.Quote);
+            isColor.Color = MatchReturn(Token.TokenType.Color);
+            Match(Token.TokenType.Quote);
+            Match(Token.TokenType.Comma);
+            isColor.X = StatementBuilder();
+            Match(Token.TokenType.Comma);
+            isColor.Y = StatementBuilder();
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+
+            return isColor;
         }
 
         //GoTo
@@ -479,15 +579,44 @@ namespace Pixel_Walle
             Match(Token.TokenType.ClosedBracket);
             Match(Token.TokenType.OpenParan);
             goTo.Condition = StatementBuilder();
-            Match(Token.TokenType.ClosedParan);
+
+            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
+                Match();
+            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
 
             return goTo;
         }
-        public Label LabelBuilder()
+        private Label LabelBuilder()
         {
             Label label = new Label();
 
             label.Value = MatchReturn(Token.TokenType.UnKnown);
+
+            while (Index < Tokens.Length - 1)
+            {
+                if (LookAhead(false, Token.TokenType.UnKnown))
+                {
+                    if (Index + 2 < Tokens.Length)
+                    {
+                        if (Tokens[Index + 2].Type == Token.TokenType.Assignment)
+                            label.Instructions.Add(VariableBuilder());
+                        else
+                        {
+                            int aux = Index;
+                            label.Instructions.Add(LabelBuilder());
+                            Index = aux + 1;
+                        }
+                    }
+                    else
+                    {
+                        int aux = Index;
+                        label.Instructions.Add(LabelBuilder());
+                        Index = aux + 1;
+                    };
+                }
+                else
+                    label.Instructions.Add(InstructionsBuilder());
+            }
 
             return label;
         }

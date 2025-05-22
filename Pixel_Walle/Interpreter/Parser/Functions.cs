@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pixel_Walle;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,11 +17,11 @@ namespace Pixel_Walle
     }
     public class GetActualY : Functions
     {
-           
+
     }
     public class GetCanvasSize : Functions
     {
-        
+
     }
     public class GetColorCount : Functions
     {
@@ -43,5 +44,11 @@ namespace Pixel_Walle
         public Token? Color;
         public Statement? Vertical;
         public Statement? Horizontal;
+    }
+    public class IsColor : Functions
+    {
+        public Token? Color;
+        public Statement? X;
+        public Statement? Y;
     }
 }

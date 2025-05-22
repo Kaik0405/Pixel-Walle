@@ -8,6 +8,6 @@ namespace Pixel_Walle
 {
     public class ProgramCompiler
     {
-        public List<Instructions> Instructions { get; set; } = new List<Instructions>();
+        public List<Instructions?> Instructions { get; set; } = new List<Instructions?>();
     }
 }
