@@ -1,8 +1,12 @@
 ﻿using Pixel_Walle;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Numerics;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -14,6 +18,8 @@ namespace Pixel_Walle
         private Token[] Tokens { get; }
         private Token? CurrentToken { get; set; }
         private int Index { get; set; }
+        private bool DetectorError = false;
+
         //Builder
         public Parser(Token[] tokens)
         {
@@ -69,15 +75,19 @@ namespace Pixel_Walle
         }                // Avanza sin importar el siguiente Token
         private void Match(params Token.TokenType?[] nextTokens)
         {
-            foreach (Token.TokenType? item in nextTokens)
+            if (!DetectorError)
             {
-                if (item == LookAhead()?.Type)
-                    this.CurrentToken = Tokens[++Index];
-                else
+                foreach (Token.TokenType? item in nextTokens)
                 {
-                    Utils.Errors.Add($"Error Sintáctico: No se esperaba un \"{LookAhead()?.Value}\" Line: {LookAhead()?.Line}, Column: {LookAhead()?.Column}");
-                    if (ThereIsNext())
+                    if (item == LookAhead()?.Type)
                         this.CurrentToken = Tokens[++Index];
+                    else
+                    {
+                        Utils.Errors.Add($"Error Sintáctico: Se esperaba un \"{item}\" Linea: {LookAhead()?.Line}, Columna: {LookAhead()?.Column}");
+                        Recover();
+                        DetectorError = true;
+                        return;
+                    }
                 }
             }
         }                // Avanza en el orden de parámetros de entrada
@@ -93,18 +103,26 @@ namespace Pixel_Walle
                         return CurrentToken;
                     }
                 }
-                Utils.Errors.Add($"Error Sintáctico: No se esperaba un \"{LookAhead()?.Value}\" Line: {LookAhead()?.Line}, Column: {LookAhead()?.Column}");
-                if (ThereIsNext())
-                    this.CurrentToken = Tokens[++Index];
+                string expectedTokens = string.Join(", ", nextTokens.Select(t => t.ToString()));
+                Utils.Errors.Add($"Error Sintáctico: Se esperaba uno de los siguientes tokens \"{expectedTokens}\" Linea: {LookAhead()?.Line}, Columna: {LookAhead()?.Column}");
+                DetectorError = true;
+                Recover();
+                return null;
             }
             else
             {
                 this.CurrentToken = Tokens[++Index];
                 return CurrentToken;
             }
-
-            return null;
         }         // Retorna uno de los coincidentes
+        private void Recover()
+        {
+            int Line = CurrentToken?.Line ?? 0;
+            while (ThereIsNext() && Line == LookAhead().Line)
+            {
+                this.CurrentToken = Tokens[++Index];
+            }
+        }  // Avanza hasta la próxima línea
 
         //ProgramCompiler
         public ProgramCompiler Parsing()
@@ -117,6 +135,7 @@ namespace Pixel_Walle
 
             while (Index < Tokens.Length - 1)
             {
+                DetectorError = false;
                 if (LookAhead(false, Token.TokenType.UnKnown))
                 {
                     if (Index + 2 < Tokens.Length)
@@ -125,22 +144,30 @@ namespace Pixel_Walle
                             programCompiler.Instructions.Add(VariableBuilder());
                         else
                         {
-                            int aux = Index;
-                            programCompiler.Instructions.Add(LabelBuilder());
-                            Index = aux + 1;
+                            int Line = LookAhead()?.Line ?? 0;
+                            if (Tokens[Index + 2].Line == LookAhead().Line)
+                                programCompiler.Instructions.Add(InstructionsBuilder());
+                            else
+                            {
+
+                                programCompiler.Instructions.Add(LabelBuilder());
+
+                            }
                         }
                     }
                     else
                     {
-                        int aux = Index;
+
                         programCompiler.Instructions.Add(LabelBuilder());
-                        Index = aux + 1;
+
                     };
                 }
                 else
+                {
                     programCompiler.Instructions.Add(InstructionsBuilder());
-
+                }
             }
+            Utils.RemoveDuplicatesFromErrors();
             return programCompiler;
         }
         private Instructions? InstructionsBuilder()
@@ -168,8 +195,9 @@ namespace Pixel_Walle
 
             else
             {
-                Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
-                Index++;
+                Utils.Errors.Add($"Error Sintáctico: {LookAhead()?.Value} no es una instrucción correcta Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+                CurrentToken = Tokens[++Index];
+                Recover();
                 return null;
             }
         }
@@ -213,12 +241,25 @@ namespace Pixel_Walle
             {
                 if (LookAhead(false, Token.TokenType.Digit))
                     factor.Value = MatchReturn();
+                else if (LookAhead(false, Token.TokenType.Minus, Token.TokenType.Digit))
+                {
+                    Match();
+                    Token negative = new Token(Token.TokenType.Digit, "-" + LookAhead().Type, LookAhead().Line, LookAhead().Column);
+                    Match();
+                    factor.Value = negative;
+                }
 
                 else if (LookAhead(false, Token.TokenType.UnKnown))
                     factor.Variable = MatchReturn(Token.TokenType.UnKnown);
 
                 else if (Utils.FunctionList.Contains(LookAhead().Type))
                     factor.Functions = FunctionBuilder();
+                else
+                {
+                    DetectorError = true;
+                    Recover();
+                    Utils.Errors.Add($"Error Sintáctico: Se esperaba un valor. Line: {LookAhead()?.Line} Column: {LookAhead()?.Column}");
+                }
             }
             return factor;
         }
@@ -283,13 +324,13 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
 
-            spawn.X = MatchReturn(Token.TokenType.Digit);
-            Match(Token.TokenType.Comma);
-            spawn.Y = MatchReturn(Token.TokenType.Digit);
+            spawn.X = DetectorError ? null : MatchReturn(Token.TokenType.Digit);
 
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.Comma);
+
+            spawn.Y = DetectorError ? null : MatchReturn(Token.TokenType.Digit);
+
+            Match(Token.TokenType.ClosedParan);
 
             return spawn;
         }
@@ -299,30 +340,30 @@ namespace Pixel_Walle
             Match(Token.TokenType.Size);
 
             Match(Token.TokenType.OpenParan);
-            size.K = StatementBuilder();
-
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            size.K = DetectorError ? null : StatementBuilder();
+            Match(Token.TokenType.ClosedParan);
 
             return size;
         }
         private DrawLine DrawLineBuilder()
         {
             DrawLine drawLine = new DrawLine();
-            Match(Token.TokenType.DrawLine);
 
+            Match(Token.TokenType.DrawLine);
             Match(Token.TokenType.OpenParan);
 
-            drawLine.DirX = StatementBuilder();
-            Match(Token.TokenType.Comma);
-            drawLine.DirY = StatementBuilder();
-            Match(Token.TokenType.Comma);
-            drawLine.Distance = StatementBuilder();
+            drawLine.DirX = DetectorError ? null : StatementBuilder();
 
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.Comma);
+
+            drawLine.DirY = DetectorError ? null : StatementBuilder();
+
+            Match(Token.TokenType.Comma);
+
+            drawLine.Distance = DetectorError ? null : StatementBuilder();
+
+            Match(Token.TokenType.ClosedParan);
+
 
             return drawLine;
         }
@@ -333,38 +374,34 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
 
-            drawCircle.DirX = StatementBuilder();
+            drawCircle.DirX = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawCircle.DirY = StatementBuilder();
+            drawCircle.DirY = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawCircle.Radius = StatementBuilder();
+            drawCircle.Radius = DetectorError ? null : StatementBuilder();
 
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.ClosedParan);
 
             return drawCircle;
         }
         private DrawRectangle DrawRectangleBuilder()
         {
             DrawRectangle drawRectangle = new DrawRectangle();
-            Match(Token.TokenType.DrawRectangle);
 
+            Match(Token.TokenType.DrawRectangle);
             Match(Token.TokenType.OpenParan);
 
-            drawRectangle.DirX = StatementBuilder();
+            drawRectangle.DirX = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawRectangle.DirY = StatementBuilder();
+            drawRectangle.DirY = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawRectangle.Distance = StatementBuilder();
+            drawRectangle.Distance = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawRectangle.Width = StatementBuilder();
+            drawRectangle.Width = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            drawRectangle.Height = StatementBuilder();
+            drawRectangle.Height = DetectorError ? null : StatementBuilder();
 
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.ClosedParan);
 
             return drawRectangle;
         }
@@ -374,19 +411,31 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.Fill);
             Match(Token.TokenType.OpenParan);
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.ClosedParan);
 
             return fill;
         }
         private Variable VariableBuilder()
         {
             Variable variable = new Variable();
+            int line = LookAhead().Line;
 
             variable.Name = MatchReturn(Token.TokenType.UnKnown);
+
+            if (!Utils.CheckValidLabel(variable.Name?.Value))
+            {
+                Utils.Errors.Add($"Error Sintáctico: \"{variable.Name?.Value}\" no es una palabra correcta. Linea: {variable.Name?.Line}, Columna: {variable.Name?.Column}");
+                DetectorError = true;
+                Recover();
+            }
+
             Match(Token.TokenType.Assignment);
-            variable.Value = StatementBuilder();
+
+            if (LookAhead().Line == line)
+                variable.Value = DetectorError ? null : StatementBuilder();
+
+            else if (LookAhead().Line != line && !DetectorError)
+                Utils.Errors.Add($"Error Sintáctico: No se le asigno ningún valor a \"{variable.Name?.Value}\" ");
 
             return variable;
         }
@@ -398,12 +447,11 @@ namespace Pixel_Walle
             Match(Token.TokenType.OpenParan);
             Match(Token.TokenType.Quote);
 
-            color.Value = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
+            color.Value = DetectorError ? null : MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
                 Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
+
             Match(Token.TokenType.Quote);
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.ClosedParan);
 
             return color;
         }
@@ -436,9 +484,7 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.GetActualX);
             Match(Token.TokenType.OpenParan);
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.ClosedParan);
 
             return getActualX;
         }
@@ -448,9 +494,7 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.GetActualY);
             Match(Token.TokenType.OpenParan);
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.ClosedParan);
 
             return getActualY;
         }
@@ -460,9 +504,7 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.GetCanvasSize);
             Match(Token.TokenType.OpenParan);
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.ClosedParan);
 
             return getCanvasSize;
         }
@@ -475,22 +517,19 @@ namespace Pixel_Walle
             Match(Token.TokenType.OpenParan);
 
             Match(Token.TokenType.Quote);
-            getColorCount.Color = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
+            getColorCount.Color = DetectorError ? null : MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
                 Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
             Match(Token.TokenType.Quote);
 
             Match(Token.TokenType.Comma);
-            getColorCount.X1 = StatementBuilder();
+            getColorCount.X1 = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            getColorCount.Y1 = StatementBuilder();
+            getColorCount.Y1 = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            getColorCount.X2 = StatementBuilder();
+            getColorCount.X2 = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            getColorCount.Y2 = StatementBuilder();
-
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            getColorCount.Y2 = DetectorError ? null : StatementBuilder();
+            Match(Token.TokenType.ClosedParan);
 
             return getColorCount;
         }
@@ -502,12 +541,10 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
             Match(Token.TokenType.Quote);
-            isBrushColor.Color = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
+            isBrushColor.Color = DetectorError ? null : MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
                 Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
             Match(Token.TokenType.Quote);
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.ClosedParan);
 
             return isBrushColor;
         }
@@ -518,10 +555,8 @@ namespace Pixel_Walle
             Match(Token.TokenType.IsBrushSize);
 
             Match(Token.TokenType.OpenParan);
-            isBrushSize.Size = StatementBuilder();
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            isBrushSize.Size = DetectorError ? null : StatementBuilder();
+            Match(Token.TokenType.ClosedParan);
 
             return isBrushSize;
         }
@@ -534,17 +569,15 @@ namespace Pixel_Walle
             Match(Token.TokenType.OpenParan);
 
             Match(Token.TokenType.Quote);
-            isCanvasColor.Color = MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
+            isCanvasColor.Color = DetectorError ? null : MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
                 Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
             Match(Token.TokenType.Quote);
 
             Match(Token.TokenType.Comma);
-            isCanvasColor.Vertical = StatementBuilder();
+            isCanvasColor.Vertical = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            isCanvasColor.Horizontal = StatementBuilder();
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            isCanvasColor.Horizontal = DetectorError ? null : StatementBuilder();
+            Match(Token.TokenType.ClosedParan);
 
             return isCanvasColor;
         }
@@ -553,18 +586,16 @@ namespace Pixel_Walle
             IsColor isColor = new IsColor();
 
             Match(Token.TokenType.IsColor);
+
             Match(Token.TokenType.OpenParan);
             Match(Token.TokenType.Quote);
-            isColor.Color = MatchReturn(Token.TokenType.Color);
+            isColor.Color = DetectorError ? null : MatchReturn(Token.TokenType.Color);
             Match(Token.TokenType.Quote);
             Match(Token.TokenType.Comma);
-            isColor.X = StatementBuilder();
+            isColor.X = DetectorError ? null : StatementBuilder();
             Match(Token.TokenType.Comma);
-            isColor.Y = StatementBuilder();
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
-
+            isColor.Y = DetectorError ? null : StatementBuilder();
+            Match(Token.TokenType.ClosedParan);
             return isColor;
         }
 
@@ -574,26 +605,34 @@ namespace Pixel_Walle
             GoTo goTo = new GoTo();
 
             Match(Token.TokenType.GoTo);
-            Match(Token.TokenType.OpenBracket);
-            goTo.Label = MatchReturn(Token.TokenType.UnKnown);
-            Match(Token.TokenType.ClosedBracket);
-            Match(Token.TokenType.OpenParan);
-            goTo.Condition = StatementBuilder();
 
-            if (LookAhead()?.Type == Token.TokenType.ClosedParan)
-                Match();
-            else Utils.Errors.Add($"Error Sintáctico: No se esperaba {LookAhead()?.Value} Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");
+            Match(Token.TokenType.OpenBracket);
+            goTo.Label = DetectorError == true ? null : MatchReturn(Token.TokenType.UnKnown);
+            Match(Token.TokenType.ClosedBracket);
+
+            Match(Token.TokenType.OpenParan);
+            goTo.Condition = DetectorError ? null : StatementBuilder();
+            Match(Token.TokenType.ClosedParan);
 
             return goTo;
         }
+        //Label
         private Label LabelBuilder()
         {
             Label label = new Label();
 
-            label.Value = MatchReturn(Token.TokenType.UnKnown);
+            label.Value = LookAhead();
+
+            if (!Utils.CheckValidLabel(LookAhead().Value))
+                Utils.Errors.Add($"Error Sintáctico: \"{LookAhead()?.Value}\" no es una palabra correcta. Linea: {LookAhead()?.Line}, Columna: {LookAhead()?.Column}");
+
+            Utils.keyLabelsReferences.Add(LookAhead()?.Value ?? "null", label);
+
+            Match();
 
             while (Index < Tokens.Length - 1)
             {
+                DetectorError = false;
                 if (LookAhead(false, Token.TokenType.UnKnown))
                 {
                     if (Index + 2 < Tokens.Length)
@@ -602,17 +641,17 @@ namespace Pixel_Walle
                             label.Instructions.Add(VariableBuilder());
                         else
                         {
-                            int aux = Index;
-                            label.Instructions.Add(LabelBuilder());
-                            Index = aux + 1;
+                            int Line = LookAhead()?.Line ?? 0;
+                            if (Tokens[Index + 2].Line == LookAhead().Line)
+                                label.Instructions.Add(InstructionsBuilder());
+
+                            else
+                                label.SubLabel = LabelBuilder();
                         }
                     }
                     else
-                    {
-                        int aux = Index;
-                        label.Instructions.Add(LabelBuilder());
-                        Index = aux + 1;
-                    };
+                        label.SubLabel = LabelBuilder();
+
                 }
                 else
                     label.Instructions.Add(InstructionsBuilder());

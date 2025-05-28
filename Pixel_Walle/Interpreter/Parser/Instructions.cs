@@ -63,6 +63,7 @@ namespace Pixel_Walle
     public class Label : Instructions
     {
         public Token? Value;
+        public Label? SubLabel;
         public List<Instructions?> Instructions = new List<Instructions?>();
     }
 }

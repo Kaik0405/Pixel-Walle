@@ -9,6 +9,7 @@ namespace Pixel_Walle
     public static class Utils
     {   
         public static List<string> Errors = new List<string>();
+        public static Dictionary<string, Label> keyLabelsReferences = new Dictionary<string, Label>();
         public static List<Token.TokenType> FunctionList = new List<Token.TokenType>
         {
             Token.TokenType.GetActualX,
@@ -19,6 +20,10 @@ namespace Pixel_Walle
             Token.TokenType.IsBrushSize,
             Token.TokenType.IsCanvasColor,
         };
+        public static void RemoveDuplicatesFromErrors()
+        {
+            Errors = Errors.Distinct().ToList();
+        }
         public static double Operation(double a, double b, Token? value)
         {
             switch (value?.Type)
@@ -63,5 +68,6 @@ namespace Pixel_Walle
                 default: return false;
             }
         }
+        public static bool CheckValidLabel(string? name) => (name?[0] == '_' || name?[name.Length - 1] == '_') ? false : true;
     }
 }
