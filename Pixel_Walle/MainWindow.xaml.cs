@@ -25,9 +25,18 @@ namespace Pixel_Walle
             Parser parsing = new Parser(Tokenization.GetLexer());
 
             parsing.Parsing();
+            if (Utils.Errors.Count == 0)
+                MessageBox.Show("Parsing Complete");
+            else
+            {
+                StringBuilder errorMessage = new StringBuilder("Errors found during parsing:\n");
+                foreach (var error in Utils.Errors)
+                {
+                    errorMessage.AppendLine(error);
+                }
+                MessageBox.Show(errorMessage.ToString(), "Parsing Errors", MessageBoxButton.OK, MessageBoxImage.Error);
 
-            MessageBox.Show("Parsing Complete");
-            
+            }
         }
         private void InitializeCanvas(int rows, int columns)
         {
