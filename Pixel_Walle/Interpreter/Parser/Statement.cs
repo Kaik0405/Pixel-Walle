@@ -6,10 +6,39 @@ using System.Threading.Tasks;
 
 namespace Pixel_Walle
 {
-    public class Statement
+    public class Statement : ICheckSemantic
     {
         public SubStatement? SubState { get; set; }
         public Statement? State { get; set; }
+        public Token? Symbol { get; set; }
+        public bool CheckSemantic(IScope scope)
+        {
+            if (SubState != null && State != null)
+            {
+                if (!SubState.CheckSemantic(scope) || !State.CheckSemantic(scope))
+                {
+                    return false;
+                }
+                if (SubState.GetType(scope) != State.GetType(scope))
+                {
+                    Utils.Errors.Add($"Error Semántico: No se puede establecer una relación entre tipos \"{SubState.GetType(scope)}\" y \"{State.GetType(scope)}\" mediante el operador \"&&\". Linea: {Symbol?.Line} Column: {Symbol?.Column} ");
+                    return false;
+                }
+                if (SubState.GetType(scope) == Utils.ReturnType.Number && SubState.GetType(scope) == Utils.ReturnType.Number)
+                {
+                    Utils.Errors.Add($"Error Semántico: No se puede establecer una relación entre tipos \"{SubState.GetType(scope)}\" y \"{State.GetType(scope)}\" mediante el operador \"&&\" . Linea: {Symbol?.Line} Column: {Symbol?.Column}");
+                    return false;
+                }
+            }
+            else if (SubState != null)
+            {
+                if (!SubState.CheckSemantic(scope))
+                    return false;
+
+            }
+            return true;
+        }
+
         public object? Evaluate()
         {
             if (SubState != null)
@@ -22,11 +51,46 @@ namespace Pixel_Walle
             }
             return null;
         }
+
+        public Utils.ReturnType? GetType(IScope scope)
+        {
+            if (SubState != null)
+                return SubState.GetType(scope);
+
+            return null;
+        }
     }
-    public class SubStatement
+    public class SubStatement : ICheckSemantic
     {
         public Molecule? Mol { get; set; }
         public SubStatement? SubState { get; set; }
+        public Token? Symbol { get; set; }
+        public bool CheckSemantic(IScope scope)
+        {
+            if (Mol != null && SubState != null)
+            {
+                if (!Mol.CheckSemantic(scope) || !SubState.CheckSemantic(scope))
+                    return false;
+                if (Mol.GetType(scope) != SubState.GetType(scope))
+                {
+                    Utils.Errors.Add($"Error Semántico: No se puede establecer una relación entre tipos \"{Mol.GetType(scope)}\" y \"{SubState.GetType(scope)}\" mediante el operador \"||\". Linea: {Symbol?.Line} Column: {Symbol?.Column}");
+                    return false;
+                }
+                if (Mol.GetType(scope) == Utils.ReturnType.Number && SubState.GetType(scope) == Utils.ReturnType.Number)
+                {
+                    Utils.Errors.Add($"Error Semántico: No se puede establecer una relación entre tipos \"{Mol.GetType(scope)}\" y \"{SubState.GetType(scope)}\" mediante el operador \"||\". Linea: {Symbol?.Line} Column: {Symbol?.Column}");
+                    return false;
+                }
+            }
+            else if (Mol != null)
+            {
+                if (!Mol.CheckSemantic(scope))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         public object? Evaluate()
         {
@@ -40,12 +104,54 @@ namespace Pixel_Walle
             }
             return null;
         }
+
+        internal Utils.ReturnType? GetType(IScope scope)
+        {
+            if (Mol != null)
+                return Mol.GetType(scope);
+
+            return null;
+        }
     }
-    public class Molecule
+    public class Molecule : ICheckSemantic
     {
         public Atom? Atoms { get; set; }
         public Molecule? Mol { get; set; }
         public Token? Symbol { get; set; }
+
+        public bool CheckSemantic(IScope scope)
+        {
+            bool check = true;
+
+            if (Atoms != null && Mol != null)
+            {
+                if (!Atoms.CheckSemantic(scope) || !Mol.CheckSemantic(scope))
+                    check = false;
+
+                if (Atoms.GetType(scope) == Mol.GetType(scope))
+                {
+                    Utils.ReturnType? type = Atoms.GetType(scope);
+
+                    if (Symbol?.Type != Token.TokenType.Equal && type == Utils.ReturnType.Bool)
+                    {
+                        check = false;
+                        Utils.Errors.Add($"Error Semántico: No se puede establecer una relación entre tipos \"{type}\" mediante el operador \"{Symbol?.Value}\". Linea: {Symbol?.Line} Columna: {Symbol?.Column}");
+                    }
+                }
+                else
+                {
+                    check = false;
+                    Utils.Errors.Add($"Error Semántico: No se puede establecer una relación entre tipos \"{Atoms.GetType(scope)}\" y \"{Mol.GetType(scope)}\" mediante el operador \"{Symbol?.Value}\". Linea: {Symbol?.Line} Columna: {Symbol?.Column}");
+                }
+            }
+            else if (Atoms != null)
+            {
+                if (!Atoms.CheckSemantic(scope))
+                    check = false;
+
+            }
+            return check;
+        }
 
         public object? Evaluate()
         {
@@ -59,20 +165,40 @@ namespace Pixel_Walle
             }
             return null;
         }
+
+        public Utils.ReturnType? GetType(IScope scope)
+        {
+            if (Atoms != null)
+                return Atoms.GetType(scope);
+            return Utils.ReturnType.NULL;
+        }
     }
     public abstract class Atom
     {
         public abstract object? Evaluate();
+        public abstract bool CheckSemantic(IScope scope);
+        public abstract Utils.ReturnType? GetType(IScope scope);
     }
     public class Boolean : Atom
     {
         public Token? Value { get; set; }
+
+        public override bool CheckSemantic(IScope scope)
+        {
+            return true;
+        }
+
         public override object? Evaluate()
         {
             if (Value != null)
                 return Convert.ToBoolean(Value.Value);
 
             return null;
+        }
+
+        public override Utils.ReturnType? GetType(IScope scope)
+        {
+            return Utils.ReturnType.Bool;
         }
     }
 }

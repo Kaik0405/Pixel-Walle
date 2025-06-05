@@ -6,8 +6,23 @@ using System.Threading.Tasks;
 
 namespace Pixel_Walle
 {
-    public class ProgramCompiler
+    public class ProgramCompiler : ICheckSemantic
     {
-        public List<Instructions?> Instructions { get; set; } = new List<Instructions?>();
+        public List<Instructions?> Instructions { get; set; }
+
+        public ProgramCompiler()
+        {
+            Instructions = new List<Instructions?>();
+        }
+        public bool CheckSemantic(IScope scope)
+        {
+            bool check = true;
+
+            foreach (var instruction in Instructions)
+                if ((instruction is not null) && (!instruction.CheckSemantic(scope)))
+                    check = false;
+
+            return check;
+        }
     }
 }

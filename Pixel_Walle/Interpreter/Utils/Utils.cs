@@ -7,9 +7,14 @@ using System.Threading.Tasks;
 namespace Pixel_Walle
 {
     public static class Utils
-    {   
+    {
+        public enum ReturnType { Bool, Number, NULL }
         public static List<string> Errors = new List<string>();
         public static Dictionary<string, Label> keyLabelsReferences = new Dictionary<string, Label>();
+        public static HashSet<string> Colors = new HashSet<string>()
+        {
+            "Red","Blue","Green","Yellow","Orange","Purple","Black","White","Transparent"
+        };
         public static List<Token.TokenType> FunctionList = new List<Token.TokenType>
         {
             Token.TokenType.GetActualX,
@@ -69,5 +74,32 @@ namespace Pixel_Walle
             }
         }
         public static bool CheckValidLabel(string? name) => (name?[0] == '_' || name?[name.Length - 1] == '_') ? false : true;
+
+        public static bool CheckInstruction(string nameIns, Statement statement, IScope scope)
+        {
+            bool checking = true;
+
+            if (!statement.CheckSemantic(scope))
+                checking = false;
+            if (statement.GetType(scope) != ReturnType.Number)
+            {
+                Errors.Add($"Error Semántico: La instrucción \"{nameIns}\" no puede recibir como parámetro un \"{statement.GetType(scope)}\" ");
+                checking = false;
+            }
+            return checking;
+        }
+        public static bool CheckFunction(string nameIns, Statement statement, IScope scope)
+        {
+            bool checking = true;
+
+            if (!statement.CheckSemantic(scope))
+                checking = false;
+            if (statement.GetType(scope) != ReturnType.Number)
+            {
+                Errors.Add($"Error Semántico: La función \"{nameIns}\" no puede recibir como parámetro un \"{statement.GetType(scope)}\" ");
+                checking = false;
+            }
+            return checking;
+        }
     }
 }

@@ -18,24 +18,46 @@ namespace Pixel_Walle
             InitializeComponent();
             InitializeCanvas(10, 10); // Dimensiones iniciales del canvas
         }
-        private void Execute(object sender, RoutedEventArgs e)
+
+        public void Execute(object sender, RoutedEventArgs e)
+        {
+            Utils.Errors.Clear();
+            Utils.keyLabelsReferences.Clear();
+            RunExecute(sender, e);
+        }
+        private void RunExecute(object sender, RoutedEventArgs e)
         {
             Lexer Tokenization = new Lexer(GetTextBoxLines());
 
             Parser parsing = new Parser(Tokenization.GetLexer());
 
-            parsing.Parsing();
-            if (Utils.Errors.Count == 0)
-                MessageBox.Show("Parsing Complete");
-            else
+            ProgramCompiler ast = parsing.Parsing();
+            if (Utils.Errors.Count > 0)
             {
-                StringBuilder errorMessage = new StringBuilder("Errors found during parsing:\n");
+                StringBuilder errorMessage = new StringBuilder("----Errores Sintácticos Detectados----\n");
                 foreach (var error in Utils.Errors)
                 {
                     errorMessage.AppendLine(error);
                 }
-                MessageBox.Show(errorMessage.ToString(), "Parsing Errors", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(errorMessage.ToString(), "Errores Sintácticos", MessageBoxButton.OK, MessageBoxImage.Error);
 
+            }
+            else
+            {
+                Scope scope = new Scope();
+                if (!ast.CheckSemantic(scope))
+                {
+                    StringBuilder errorMessage = new StringBuilder("----Errores Semánticos Detectados----\n");
+                    foreach (var error in Utils.Errors)
+                    {
+                        errorMessage.AppendLine(error);
+                    }
+                    MessageBox.Show(errorMessage.ToString(), "Errores Semánticos", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Código correcto y listo para evaluar");
+                }
             }
         }
         private void InitializeCanvas(int rows, int columns)

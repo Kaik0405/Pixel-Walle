@@ -13,7 +13,7 @@ using System.Windows.Media;
 
 namespace Pixel_Walle
 {
-    public class Parser
+    public class Parser : IParsing
     {
         private Token[] Tokens { get; }
         private Token? CurrentToken { get; set; }
@@ -222,7 +222,7 @@ namespace Pixel_Walle
             term.Factor = FactorBuilder();
             if (LookAhead(false, Token.TokenType.Times, Token.TokenType.Divide, Token.TokenType.Pow, Token.TokenType.Module))
             {
-                term.Value = MatchReturn();
+                term.Operator = MatchReturn();
                 term.Terms = TermBuilder();
             }
             return term;
@@ -250,7 +250,7 @@ namespace Pixel_Walle
                 }
 
                 else if (LookAhead(false, Token.TokenType.UnKnown))
-                    factor.Variable = MatchReturn(Token.TokenType.UnKnown);
+                    factor.Value = MatchReturn(Token.TokenType.UnKnown);
 
                 else if (Utils.FunctionList.Contains(LookAhead().Type))
                     factor.Functions = FunctionBuilder();
@@ -270,9 +270,11 @@ namespace Pixel_Walle
             Statement statement = new Statement();
 
             statement.SubState = SubStatementBuilder();
-            if (LookAhead(true, Token.TokenType.AND))
+            if (LookAhead(false, Token.TokenType.AND))
+            {
+                statement.Symbol = MatchReturn();
                 statement.State = StatementBuilder();
-
+            }
             return statement;
         }
         private SubStatement SubStatementBuilder()
@@ -280,9 +282,11 @@ namespace Pixel_Walle
             SubStatement subStatement = new SubStatement();
 
             subStatement.Mol = MoleculeBuilder();
-            if (LookAhead(true, Token.TokenType.OR))
+            if (LookAhead(false, Token.TokenType.OR))
+            {
+                subStatement.Symbol = MatchReturn();
                 subStatement.SubState = SubStatementBuilder();
-
+            }
             return subStatement;
         }
         private Molecule MoleculeBuilder()
@@ -589,7 +593,8 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
             Match(Token.TokenType.Quote);
-            isColor.Color = DetectorError ? null : MatchReturn(Token.TokenType.Color);
+            isColor.Color = DetectorError ? null : MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
+                Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
             Match(Token.TokenType.Quote);
             Match(Token.TokenType.Comma);
             isColor.X = DetectorError ? null : StatementBuilder();
