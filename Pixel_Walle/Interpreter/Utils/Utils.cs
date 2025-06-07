@@ -16,7 +16,8 @@ namespace Pixel_Walle
         public static Wall_E wall_E = new Wall_E(0,0,"");
         public enum ReturnType { Bool, Number, NULL }
         public static List<string> Errors = new List<string>();
-        public static Dictionary<string, Label> keyLabelsReferences = new Dictionary<string, Label>();
+        public static Dictionary<string, GoTo.Label> keyLabelsReferences = new Dictionary<string, GoTo.Label>();
+        public static Dictionary<string,Variable> variables = new Dictionary<string, Variable>();
         public static HashSet<string> Colors = new HashSet<string>()
         {
             "Red","Blue","Green","Yellow","Orange","Purple","Black","White","Transparent"

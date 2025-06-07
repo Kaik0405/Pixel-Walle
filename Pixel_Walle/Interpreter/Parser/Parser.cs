@@ -473,8 +473,6 @@ namespace Pixel_Walle
                 return IsBrushSizeBuilder();
             else if (LookAhead()?.Type == Token.TokenType.IsCanvasColor)
                 return IsCanvasColorBuilder();
-            else if (LookAhead()?.Type == Token.TokenType.IsColor)
-                return IsColorBuilder();
 
             return null;
         }
@@ -581,24 +579,6 @@ namespace Pixel_Walle
 
             return isCanvasColor;
         }
-        private IsColor IsColorBuilder()
-        {
-            IsColor isColor = new IsColor();
-
-            Match(Token.TokenType.IsColor);
-
-            Match(Token.TokenType.OpenParan);
-            Match(Token.TokenType.Quote);
-            isColor.Color = DetectorError ? null : MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
-                Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
-            Match(Token.TokenType.Quote);
-            Match(Token.TokenType.Comma);
-            isColor.X = DetectorError ? null : StatementBuilder();
-            Match(Token.TokenType.Comma);
-            isColor.Y = DetectorError ? null : StatementBuilder();
-            Match(Token.TokenType.ClosedParan);
-            return isColor;
-        }
 
         //GoTo
         private GoTo GoToBuilder()
@@ -608,7 +588,7 @@ namespace Pixel_Walle
             Match(Token.TokenType.GoTo);
 
             Match(Token.TokenType.OpenBracket);
-            goTo.Label = DetectorError == true ? null : MatchReturn(Token.TokenType.UnKnown);
+            goTo.Label_ = DetectorError == true ? null : MatchReturn(Token.TokenType.UnKnown);
             Match(Token.TokenType.ClosedBracket);
 
             Match(Token.TokenType.OpenParan);
@@ -619,9 +599,9 @@ namespace Pixel_Walle
         }
 
         //Label
-        private Label LabelBuilder()
+        private GoTo.Label LabelBuilder()
         {
-            Label label = new Label();
+            GoTo.Label label = new GoTo.Label();
 
             label.Value = LookAhead();
 

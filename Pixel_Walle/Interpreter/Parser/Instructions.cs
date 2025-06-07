@@ -35,20 +35,20 @@ namespace Pixel_Walle
         }
         public override void Evaluate(IScope scope)
         {
-            double x,y;
+            double x, y;
 
             if (X is not null && Y is not null)
             {
                 x = Convert.ToDouble(X.Evaluate());
                 y = Convert.ToDouble(Y.Evaluate());
 
-                if (!Utils.CheckRange((int)x,(int)y))
+                if (!Utils.CheckRange((int)x, (int)y))
                     throw new Exception($"Error en tiempo de ejecución: La posición ({x}, {y}) está fuera de los límites del canvas.");
-                
+
                 Utils.wall_E.PosX = (int)x;
                 Utils.wall_E.PosY = (int)y;
             }
-            
+
         }
     }
     public class Color : Instructions
@@ -134,7 +134,7 @@ namespace Pixel_Walle
 
                 int currX = Utils.wall_E.PosX;
                 int currY = Utils.wall_E.PosY;
-                
+
                 for (int step = 0; step < (int)distance; step++)
                 {
                     Utils.PaintBrush(currX, currY);
@@ -142,11 +142,11 @@ namespace Pixel_Walle
                     currX += (int)x;
                     currY += (int)y;
                 }
-                
+
                 Utils.wall_E.PosX = currX;
                 Utils.wall_E.PosY = currY;
             }
-            
+
         }
     }
     public class DrawCircle : Instructions
@@ -366,13 +366,14 @@ namespace Pixel_Walle
 
         public override void Evaluate(IScope scope)
         {
-            throw new NotImplementedException();
+            //Utils.variables.Add();
         }
+        
     }
     public class GoTo : Instructions
     {
         public Statement? Condition;
-        public Token? Label;
+        public Token? Label_;
 
         public override bool CheckSemantic(IScope scope)
         {
@@ -382,9 +383,9 @@ namespace Pixel_Walle
             {
                 check = false;
             }
-            if (Label != null && (!Utils.keyLabelsReferences.ContainsKey(Label.Value)))
+            if (Label_ != null && (!Utils.keyLabelsReferences.ContainsKey(Label_.Value)))
             {
-                Utils.Errors.Add($"Error Semántico: La etiqueta {Label.Value} no existe en el contexto actual. Linea: {Label.Line} Columna: {Label.Column}");
+                Utils.Errors.Add($"Error Semántico: La etiqueta {Label_.Value} no existe en el contexto actual. Linea: {Label_.Line} Columna: {Label_.Column}");
                 check = false;
             }
             return check;
@@ -392,34 +393,43 @@ namespace Pixel_Walle
 
         public override void Evaluate(IScope scope)
         {
-            throw new NotImplementedException();
-        }
-    }
-    public class Label : Instructions
-    {
-        public Token? Value;
-        public Label? SubLabel;
-        public List<Instructions?> Instructions = new List<Instructions?>();
-
-        public override bool CheckSemantic(IScope scope)
-        {
-            bool check = true;
-            foreach (var instruction in Instructions)
+            if (Condition != null)
             {
-                if ((instruction is not null) && (!instruction.CheckSemantic(scope)))
+                if (Convert.ToBoolean(Condition.Evaluate()))
+                {
+                    if (Label_ != null && Utils.keyLabelsReferences.ContainsKey(Label_.Value))
+                        Utils.keyLabelsReferences[Label_.Value.ToString()].Evaluate(scope);
+                }
+            }
+        }
+        public class Label : Instructions
+        {
+            public Token? Value;
+            public Label? SubLabel;
+            public List<Instructions?> Instructions = new List<Instructions?>();
+            public override bool CheckSemantic(IScope scope)
+            {
+                bool check = true;
+                foreach (var instruction in Instructions)
+                {
+                    if ((instruction is not null) && (!instruction.CheckSemantic(scope)))
+                        check = false;
+
+                }
+                if (SubLabel is not null && (!SubLabel.CheckSemantic(scope)))
                     check = false;
 
+
+                return check;
             }
-            if (SubLabel is not null && (!SubLabel.CheckSemantic(scope)))
-                check = false;
-
-
-            return check;
-        }
-
-        public override void Evaluate(IScope scope)
-        {
-            throw new NotImplementedException();
+            public override void Evaluate(IScope scope)
+            {
+                foreach (var instruction in Instructions)
+                    instruction?.Evaluate(scope);
+                
+                if (SubLabel != null) 
+                    SubLabel.Evaluate(scope);
+            }
         }
     }
 }

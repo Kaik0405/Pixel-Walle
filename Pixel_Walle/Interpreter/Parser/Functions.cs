@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Pixel_Walle
 {
     public abstract class Functions
     {
         public abstract bool CheckSemantic(IScope scope);
+        public abstract object Evaluate();
         public abstract Utils.ReturnType GetType(IScope? scope);
     }
     public class GetActualX : Functions
@@ -17,6 +19,11 @@ namespace Pixel_Walle
         public override bool CheckSemantic(IScope scope)
         {
             return true;
+        }
+
+        public override object Evaluate()
+        {
+            return Utils.wall_E.PosX;
         }
 
         public override Utils.ReturnType GetType(IScope? scope)
@@ -31,6 +38,11 @@ namespace Pixel_Walle
             return true;
         }
 
+        public override object Evaluate()
+        {
+            return Utils.wall_E.PosY;
+        }
+
         public override Utils.ReturnType GetType(IScope? scope)
         {
             return Utils.ReturnType.Number;
@@ -41,6 +53,11 @@ namespace Pixel_Walle
         public override bool CheckSemantic(IScope scope)
         {
             return true;
+        }
+
+        public override object Evaluate()
+        {
+            return Utils.cellMatrix.GetLength(0);
         }
 
         public override Utils.ReturnType GetType(IScope? scope)
@@ -83,7 +100,40 @@ namespace Pixel_Walle
 
             return check;
         }
+        public override object Evaluate()
+        {
+            string color = Color?.ToString() ?? "Transparent";
+            int x1 = Convert.ToInt32(X1?.Evaluate());
+            int y1 = Convert.ToInt32(Y1?.Evaluate());
+            int x2 = Convert.ToInt32(X2?.Evaluate());
+            int y2 = Convert.ToInt32(Y2?.Evaluate());
+            
+            if (!Utils.CheckRange(x1, y1) || !Utils.CheckRange(x2, y2)) 
+                return 0;
 
+            // Asegurarse de que x1, y1 sea la esquina superior izquierda y x2, y2 la inferior derecha
+            int startX = Math.Min(x1, x2);
+            int endX = Math.Max(x1, x2);
+            int startY = Math.Min(y1, y2);
+            int endY = Math.Max(y1, y2);
+
+            int count = 0;
+
+            // Recorrer el rectángulo y contar las celdas con el color especificado
+            for (int y = startY; y <= endY; y++)
+            {
+                for (int x = startX; x <= endX; x++)
+                {
+                    if (Utils.cellMatrix[y, x].Background.ToString() == color)
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
+
+        }
         public override Utils.ReturnType GetType(IScope? scope)
         {
             return Utils.ReturnType.Number;
@@ -97,7 +147,13 @@ namespace Pixel_Walle
         {
             return true;
         }
-
+        public override object Evaluate()
+        {
+            if(Color?.ToString() == Utils.wall_E.PaintBrush)
+                return 1;
+            
+            return 0;
+        }
         public override Utils.ReturnType GetType(IScope? scope)
         {
             return Utils.ReturnType.Number;
@@ -116,7 +172,14 @@ namespace Pixel_Walle
             }
             return true;
         }
+        public override object Evaluate()
+        {
+            int size = Convert.ToInt32(Size?.Evaluate());
+            if (size == Utils.wall_E.WidthPaint)
+                return 1;
 
+            return 0;
+        }
         public override Utils.ReturnType GetType(IScope? scope)
         {
             return Utils.ReturnType.Number;
@@ -146,33 +209,22 @@ namespace Pixel_Walle
             return check;
         }
 
-        public override Utils.ReturnType GetType(IScope? scope)
+        public override object Evaluate()
         {
-            return Utils.ReturnType.Number;
-        }
-    }
-    public class IsColor : Functions
-    {
-        public Token? Color;
-        public Statement? X;
-        public Statement? Y;
-        public override bool CheckSemantic(IScope scope)
-        {
-            bool check = true;
+            int x = Convert.ToInt32(Vertical?.Evaluate());
+            int y = Convert.ToInt32(Horizontal?.Evaluate());
 
-            if (X != null)
-            {
-                if (!Utils.CheckFunction("IsColor", X, scope))
-                    check = false;
-            }
-            if (Y != null)
-            {
-                if (!Utils.CheckFunction("IsColor", Y, scope))
-                    check = false;
-            }
+            int posX = Utils.wall_E.PosX + x;
+            int posY = Utils.wall_E.PosY + y;
 
-            return check;
+            if (!Utils.CheckRange(posX, posY))
+                return 0;
+            if (Utils.cellMatrix[posY, posX].Background.ToString() == Color?.ToString())
+                return 1;
+
+            return 0;
         }
+
         public override Utils.ReturnType GetType(IScope? scope)
         {
             return Utils.ReturnType.Number;
