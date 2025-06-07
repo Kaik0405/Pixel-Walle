@@ -24,5 +24,13 @@ namespace Pixel_Walle
 
             return check;
         }
+        public void Evaluate(IScope scope)
+        {
+            foreach (var instruction in Instructions)
+            {
+                if (instruction is not null)
+                    instruction.Evaluate(scope);
+            }
+        }
     }
 }

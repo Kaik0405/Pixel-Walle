@@ -1,13 +1,19 @@
-﻿using System;
+﻿using Pixel_Walle.Interpreter.Evaluate;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Pixel_Walle
 {
     public static class Utils
     {
+        public static Border[,] cellMatrix = new Border[10,10];
+        public static Wall_E wall_E = new Wall_E(0,0,"");
         public enum ReturnType { Bool, Number, NULL }
         public static List<string> Errors = new List<string>();
         public static Dictionary<string, Label> keyLabelsReferences = new Dictionary<string, Label>();
@@ -100,6 +106,47 @@ namespace Pixel_Walle
                 checking = false;
             }
             return checking;
+        }
+        public static void ChangeCellColor(int row, int column, string colorName)
+        {
+            // Convertir el nombre del color a un objeto Brush
+            if (colorName != "Transparent")
+            {
+                Brush? newColor = (Brush?)new BrushConverter().ConvertFromString(colorName);
+
+                // Cambiar el color de fondo de la celda
+                cellMatrix[row, column].Background = newColor;
+            }
+        }
+        public static bool CheckRange(int row, int column)
+        {
+            if (row < 0 || column < 0)
+            { return false; }
+            if(row > cellMatrix.GetLength(0) || column > cellMatrix.GetLength(1)) 
+            { return false; }
+
+            return true;
+        }
+        public static void PaintBrush(int x,int y)
+        {
+            int distance = 0;
+            if (wall_E.WidthPaint >= 2)
+            {
+                distance = (wall_E.WidthPaint - 1) / 2;
+            }
+            for(int dx = -distance; dx <= distance; dx++)
+            {
+                for(int dy = - distance; dy <= distance;dy++)
+                {
+                    int px = x + dx;
+                    int py = y + dy;
+
+                    if (CheckRange(px, py))
+                    {
+                        ChangeCellColor(px, py, wall_E.PaintBrush);
+                    }
+                }
+            }
         }
     }
 }

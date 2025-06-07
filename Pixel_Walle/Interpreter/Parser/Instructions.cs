@@ -11,15 +11,44 @@ namespace Pixel_Walle
     public abstract class Instructions
     {
         public abstract bool CheckSemantic(IScope scope);
+        public abstract void Evaluate(IScope scope);
     }
     public class Spawn : Instructions
     {
-        public Token? X;
-        public Token? Y;
-
+        public Statement? X;
+        public Statement? Y;
         public override bool CheckSemantic(IScope scope)
         {
-            return true;
+            bool check = true;
+
+            if (X is not null)
+            {
+                if (!Utils.CheckInstruction("Spawn", X, scope))
+                    check = false;
+            }
+            if (Y is not null)
+            {
+                if (!Utils.CheckInstruction("Spawn", Y, scope))
+                    check = false;
+            }
+            return check;
+        }
+        public override void Evaluate(IScope scope)
+        {
+            double x,y;
+
+            if (X is not null && Y is not null)
+            {
+                x = Convert.ToDouble(X.Evaluate());
+                y = Convert.ToDouble(Y.Evaluate());
+
+                if (!Utils.CheckRange((int)x,(int)y))
+                    throw new Exception($"Error en tiempo de ejecución: La posición ({x}, {y}) está fuera de los límites del canvas.");
+                
+                Utils.wall_E.PosX = (int)x;
+                Utils.wall_E.PosY = (int)y;
+            }
+            
         }
     }
     public class Color : Instructions
@@ -29,6 +58,11 @@ namespace Pixel_Walle
         public override bool CheckSemantic(IScope scope)
         {
             return true;
+        }
+
+        public override void Evaluate(IScope scope)
+        {
+            Utils.wall_E.PaintBrush = Value?.Value ?? "Transparent";
         }
     }
     public class Size : Instructions
@@ -44,6 +78,21 @@ namespace Pixel_Walle
                     check = false;
             }
             return check;
+        }
+        public override void Evaluate(IScope scope)
+        {
+            if (K is not null)
+            {
+                double size = Convert.ToDouble(K.Evaluate());
+                if (size < 1 || size > Utils.cellMatrix.GetLength(0) || size > Utils.cellMatrix.GetLength(1))
+                    throw new Exception($"Error en tiempo de ejecución: El tamaño del pincel debe estar en un rango inferior a la dimension del canvas. Valor proporcionado: {size}");
+
+                if ((int)size % 2 == 0)
+                    size = size - 1;
+
+                Utils.wall_E.WidthPaint = (int)size;
+
+            }
         }
     }
     public class DrawLine : Instructions
@@ -73,13 +122,38 @@ namespace Pixel_Walle
             }
             return check;
         }
+        public override void Evaluate(IScope scope)
+        {
+            double x, y, distance;
+
+            if (DirX != null && DirY != null && Distance != null)
+            {
+                x = Convert.ToDouble(DirX.Evaluate());
+                y = Convert.ToDouble(DirY.Evaluate());
+                distance = Convert.ToDouble(Distance.Evaluate());
+
+                int currX = Utils.wall_E.PosX;
+                int currY = Utils.wall_E.PosY;
+                
+                for (int step = 0; step < (int)distance; step++)
+                {
+                    Utils.PaintBrush(currX, currY);
+                    Utils.ChangeCellColor(currX, currY, Utils.wall_E.PaintBrush);
+                    currX += (int)x;
+                    currY += (int)y;
+                }
+                
+                Utils.wall_E.PosX = currX;
+                Utils.wall_E.PosY = currY;
+            }
+            
+        }
     }
     public class DrawCircle : Instructions
     {
         public Statement? DirX;
         public Statement? DirY;
         public Statement? Radius;
-
         public override bool CheckSemantic(IScope scope)
         {
             bool check = true;
@@ -101,6 +175,55 @@ namespace Pixel_Walle
             }
             return check;
         }
+        public override void Evaluate(IScope scope)
+        {
+            double dirX, dirY, radius;
+
+            if (DirX != null && DirY != null && Radius != null)
+            {
+                dirX = Convert.ToDouble(DirX.Evaluate());
+                dirY = Convert.ToDouble(DirY.Evaluate());
+                radius = Convert.ToDouble(Radius.Evaluate());
+
+                int centerX = Utils.wall_E.PosX + (int)dirX * (int)radius;
+                int centerY = Utils.wall_E.PosY + (int)dirY * (int)radius;
+
+                int x = 0;
+                int y = (int)radius + 1;
+                int d = 3 - 2 * (int)radius + 1;
+
+                DrawCirclePoints(centerX, centerY, x, y);
+
+                while (y >= x) //algoritmo del círculo de Bresenham
+                {
+                    x++;
+                    if (d > 0)
+                    {
+                        y--;
+                        d = d + 4 * (x - y) + 10;
+                    }
+                    else
+                    {
+                        d = d + 4 * x + 6;
+                    }
+                    DrawCirclePoints(centerX, centerY, x, y);
+                }
+
+                Utils.wall_E.PosX = centerX;
+                Utils.wall_E.PosY = centerY;
+            }
+        }
+        private void DrawCirclePoints(int cx, int cy, int x, int y)
+        {
+            Utils.PaintBrush(cx + x, cy + y);
+            Utils.PaintBrush(cx - x, cy + y);
+            Utils.PaintBrush(cx + x, cy - y);
+            Utils.PaintBrush(cx - x, cy - y);
+            Utils.PaintBrush(cx + y, cy + x);
+            Utils.PaintBrush(cx - y, cy + x);
+            Utils.PaintBrush(cx + y, cy - x);
+            Utils.PaintBrush(cx - y, cy - x);
+        }
     }
     public class DrawRectangle : Instructions
     {
@@ -109,7 +232,6 @@ namespace Pixel_Walle
         public Statement? Distance;
         public Statement? Width;
         public Statement? Height;
-
         public override bool CheckSemantic(IScope scope)
         {
             bool check = true;
@@ -144,12 +266,84 @@ namespace Pixel_Walle
 
             return check;
         }
+        public override void Evaluate(IScope scope)
+        {
+            int dirX, dirY, distance, width, height;
+
+            if (DirX != null && DirY != null && Distance != null && Width != null && Height != null)
+            {
+                dirX = Convert.ToInt32(DirX.Evaluate());
+                dirY = Convert.ToInt32(DirY.Evaluate());
+                distance = Convert.ToInt32(Distance.Evaluate());
+                height = Convert.ToInt32(Width.Evaluate());
+                width = Convert.ToInt32(Height.Evaluate());
+
+                int centerX = Utils.wall_E.PosX + dirX * distance;
+                int centerY = Utils.wall_E.PosY + dirY * distance;
+
+                // Esquinas del rectángulo
+                int left = centerX - width / 2;
+                int right = centerX + (width - 1) / 2;
+                int top = centerY - height / 2;
+                int bottom = centerY + (height - 1) / 2;
+
+                // Lados horizontales (top y bottom)
+                for (int x = left; x <= right; x++)
+                {
+                    Utils.PaintBrush(x, top);
+                    Utils.PaintBrush(x, bottom);
+                }
+
+                // Lados verticales (left y right), sin esquinas para evitar doble pintado
+                for (int y = top + 1; y <= bottom - 1; y++)
+                {
+                    Utils.PaintBrush(left, y);
+                    Utils.PaintBrush(right, y);
+                }
+
+                Utils.wall_E.PosX = centerX;
+                Utils.wall_E.PosY = centerY;
+            }
+
+        }
     }
     public class Fill : Instructions
     {
         public override bool CheckSemantic(IScope scope)
         {
             return true;
+        }
+        public override void Evaluate(IScope scope)
+        {
+            int startX = Utils.wall_E.PosX; // Posición inicial X
+            int startY = Utils.wall_E.PosY; // Posición inicial Y
+            string targetColor = Utils.cellMatrix[startY, startX].Background.ToString(); // Color inicial de la celda
+
+            // Si el color del pincel es igual al color objetivo, no hace falta llenar
+            if (Utils.wall_E.PaintBrush == targetColor)
+                return;
+
+            // Cola para realizar el llenado por propagación
+            Queue<(int, int)> queue = new Queue<(int, int)>();
+            queue.Enqueue((startX, startY));
+
+            while (queue.Count > 0)
+            {
+                var (cx, cy) = queue.Dequeue();
+
+                // Verificar si la celda está dentro del canvas y si tiene el color objetivo
+                if (Utils.CheckRange(cx, cy) && Utils.cellMatrix[cy, cx].Background.ToString() == targetColor)
+                {
+                    // Pintar la celda con el color del pincel
+                    Utils.ChangeCellColor(cy, cx, Utils.wall_E.PaintBrush);
+
+                    // Añadir vecinos (arriba, abajo, izquierda, derecha) a la cola
+                    queue.Enqueue((cx + 1, cy));
+                    queue.Enqueue((cx - 1, cy));
+                    queue.Enqueue((cx, cy + 1));
+                    queue.Enqueue((cx, cy - 1));
+                }
+            }
         }
     }
     public class Variable : Instructions
@@ -168,6 +362,11 @@ namespace Pixel_Walle
                 scope.Define(this);
 
             return check;
+        }
+
+        public override void Evaluate(IScope scope)
+        {
+            throw new NotImplementedException();
         }
     }
     public class GoTo : Instructions
@@ -190,6 +389,11 @@ namespace Pixel_Walle
             }
             return check;
         }
+
+        public override void Evaluate(IScope scope)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class Label : Instructions
     {
@@ -211,6 +415,11 @@ namespace Pixel_Walle
 
 
             return check;
+        }
+
+        public override void Evaluate(IScope scope)
+        {
+            throw new NotImplementedException();
         }
     }
 }

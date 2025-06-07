@@ -149,17 +149,13 @@ namespace Pixel_Walle
                                 programCompiler.Instructions.Add(InstructionsBuilder());
                             else
                             {
-
                                 programCompiler.Instructions.Add(LabelBuilder());
-
                             }
                         }
                     }
                     else
                     {
-
                         programCompiler.Instructions.Add(LabelBuilder());
-
                     };
                 }
                 else
@@ -244,7 +240,7 @@ namespace Pixel_Walle
                 else if (LookAhead(false, Token.TokenType.Minus, Token.TokenType.Digit))
                 {
                     Match();
-                    Token negative = new Token(Token.TokenType.Digit, "-" + LookAhead().Type, LookAhead().Line, LookAhead().Column);
+                    Token negative = new Token(Token.TokenType.Digit, "-" + LookAhead().Value, LookAhead().Line, LookAhead().Column);
                     Match();
                     factor.Value = negative;
                 }
@@ -328,11 +324,11 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
 
-            spawn.X = DetectorError ? null : MatchReturn(Token.TokenType.Digit);
+            spawn.X = DetectorError ? null : StatementBuilder();
 
             Match(Token.TokenType.Comma);
 
-            spawn.Y = DetectorError ? null : MatchReturn(Token.TokenType.Digit);
+            spawn.Y = DetectorError ? null : StatementBuilder();
 
             Match(Token.TokenType.ClosedParan);
 
@@ -621,6 +617,7 @@ namespace Pixel_Walle
 
             return goTo;
         }
+
         //Label
         private Label LabelBuilder()
         {

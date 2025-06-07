@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 
 namespace Pixel_Walle
 {
@@ -27,37 +28,52 @@ namespace Pixel_Walle
         }
         private void RunExecute(object sender, RoutedEventArgs e)
         {
-            Lexer Tokenization = new Lexer(GetTextBoxLines());
-
-            Parser parsing = new Parser(Tokenization.GetLexer());
-
-            ProgramCompiler ast = parsing.Parsing();
-            if (Utils.Errors.Count > 0)
+            if (CodeEditor.Text.Length > 0)
             {
-                StringBuilder errorMessage = new StringBuilder("----Errores Sintácticos Detectados----\n");
-                foreach (var error in Utils.Errors)
-                {
-                    errorMessage.AppendLine(error);
-                }
-                MessageBox.Show(errorMessage.ToString(), "Errores Sintácticos", MessageBoxButton.OK, MessageBoxImage.Error);
+                Lexer Tokenization = new Lexer(GetTextBoxLines());
 
-            }
-            else
-            {
-                Scope scope = new Scope();
-                if (!ast.CheckSemantic(scope))
+                Parser parsing = new Parser(Tokenization.GetLexer());
+
+                ProgramCompiler ast = parsing.Parsing();
+
+                if (Utils.Errors.Count > 0)
                 {
-                    StringBuilder errorMessage = new StringBuilder("----Errores Semánticos Detectados----\n");
+                    StringBuilder errorMessage = new StringBuilder("----Errores Sintácticos Detectados----\n");
                     foreach (var error in Utils.Errors)
                     {
                         errorMessage.AppendLine(error);
                     }
-                    MessageBox.Show(errorMessage.ToString(), "Errores Semánticos", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(errorMessage.ToString(), "Errores Sintácticos", MessageBoxButton.OK, MessageBoxImage.Error);
+
                 }
                 else
                 {
-                    MessageBox.Show("Código correcto y listo para evaluar");
+                    Scope scope = new Scope();
+                    if (!ast.CheckSemantic(scope))
+                    {
+                        StringBuilder errorMessage = new StringBuilder("----Errores Semánticos Detectados----\n");
+                        foreach (var error in Utils.Errors)
+                        {
+                            errorMessage.AppendLine(error);
+                        }
+                        MessageBox.Show(errorMessage.ToString(), "Errores Semánticos", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            ast.Evaluate(scope);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
                 }
+            }
+            else
+            {
+                MessageBox.Show("Escriba código en el editor antes de ejecutar.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void InitializeCanvas(int rows, int columns)
@@ -66,6 +82,9 @@ namespace Pixel_Walle
             CanvasGrid.RowDefinitions.Clear();
             CanvasGrid.ColumnDefinitions.Clear();
             CanvasGrid.Children.Clear();
+
+            // Inicialización de la matriz de celdas
+            Utils.cellMatrix = new Border[rows, columns];
 
             // Crear filas
             for (int i = 0; i < rows; i++)
@@ -93,10 +112,10 @@ namespace Pixel_Walle
 
                     // Agregar la celda al canvas
                     CanvasGrid.Children.Add(cell);
+                    Utils.cellMatrix[i, j] = cell; // Guardar la referencia de la celda en la matriz
                 }
             }
         }
-
         private void ResizeCanvasButton_Click(object sender, RoutedEventArgs e)
         {
             // Obtener las dimensiones del canvas desde los TextBox
@@ -117,6 +136,40 @@ namespace Pixel_Walle
 
             return lines;
         }
+        private void SaveFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Crear un diálogo para guardar archivos
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Archivos GW (*.gw)|*.gw", // Filtro para archivos .gw
+                DefaultExt = ".gw", // Extensión predeterminada
+                Title = "Guardar Código"
+            };
 
+            // Mostrar el diálogo y verificar si el usuario seleccionó un archivo
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                // Guardar el contenido del TextBox en el archivo seleccionado
+                System.IO.File.WriteAllText(saveFileDialog.FileName, CodeEditor.Text);
+                MessageBox.Show("Código guardado.", "Guardar", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        } //Guardar archivo como extension (.gw)
+        private void LoadFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Crear un diálogo para abrir archivos
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Archivos GW (*.gw)|*.gw", // Filtro para archivos .gw
+                DefaultExt = ".gw", // Extensión predeterminada
+                Title = "Cargar Código"
+            };
+
+            // Mostrar el diálogo y verificar si el usuario seleccionó un archivo
+            if (openFileDialog.ShowDialog() == true)
+            {
+                // Leer el contenido del archivo seleccionado y cargarlo en el TextBox
+                CodeEditor.Text = System.IO.File.ReadAllText(openFileDialog.FileName);
+            }
+        } //Cargar archivo con extension (.gw)
     }
 }
