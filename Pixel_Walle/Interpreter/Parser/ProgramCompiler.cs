@@ -24,7 +24,7 @@ namespace Pixel_Walle
 
             return check;
         }
-        public void Evaluate(IScope scope)
+        public void Evaluate(IVisitor scope)
         {
             foreach (var instruction in Instructions)
             {

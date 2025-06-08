@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Documents;
 
 namespace Pixel_Walle
@@ -11,7 +12,7 @@ namespace Pixel_Walle
     public abstract class Instructions
     {
         public abstract bool CheckSemantic(IScope scope);
-        public abstract void Evaluate(IScope scope);
+        public abstract void Evaluate(IVisitor visitor);
     }
     public class Spawn : Instructions
     {
@@ -33,14 +34,14 @@ namespace Pixel_Walle
             }
             return check;
         }
-        public override void Evaluate(IScope scope)
+        public override void Evaluate(IVisitor visitor)
         {
             double x, y;
 
             if (X is not null && Y is not null)
             {
-                x = Convert.ToDouble(X.Evaluate());
-                y = Convert.ToDouble(Y.Evaluate());
+                x = Convert.ToDouble(X.Evaluate(visitor.Scope,visitor));
+                y = Convert.ToDouble(Y.Evaluate(visitor.Scope, visitor));
 
                 if (!Utils.CheckRange((int)x, (int)y))
                     throw new Exception($"Error en tiempo de ejecución: La posición ({x}, {y}) está fuera de los límites del canvas.");
@@ -48,7 +49,6 @@ namespace Pixel_Walle
                 Utils.wall_E.PosX = (int)x;
                 Utils.wall_E.PosY = (int)y;
             }
-
         }
     }
     public class Color : Instructions
@@ -59,8 +59,7 @@ namespace Pixel_Walle
         {
             return true;
         }
-
-        public override void Evaluate(IScope scope)
+        public override void Evaluate(IVisitor visitor)
         {
             Utils.wall_E.PaintBrush = Value?.Value ?? "Transparent";
         }
@@ -79,11 +78,11 @@ namespace Pixel_Walle
             }
             return check;
         }
-        public override void Evaluate(IScope scope)
+        public override void Evaluate(IVisitor visitor)
         {
-            if (K is not null)
+            if (K is not null )
             {
-                double size = Convert.ToDouble(K.Evaluate());
+                double size = Convert.ToDouble(K.Evaluate(visitor.Scope,visitor));
                 if (size < 1 || size > Utils.cellMatrix.GetLength(0) || size > Utils.cellMatrix.GetLength(1))
                     throw new Exception($"Error en tiempo de ejecución: El tamaño del pincel debe estar en un rango inferior a la dimension del canvas. Valor proporcionado: {size}");
 
@@ -100,7 +99,6 @@ namespace Pixel_Walle
         public Statement? DirX;
         public Statement? DirY;
         public Statement? Distance;
-
         public override bool CheckSemantic(IScope scope)
         {
             bool check = true;
@@ -122,31 +120,39 @@ namespace Pixel_Walle
             }
             return check;
         }
-        public override void Evaluate(IScope scope)
+        public override void Evaluate(IVisitor visitor)
         {
             double x, y, distance;
 
             if (DirX != null && DirY != null && Distance != null)
             {
-                x = Convert.ToDouble(DirX.Evaluate());
-                y = Convert.ToDouble(DirY.Evaluate());
-                distance = Convert.ToDouble(Distance.Evaluate());
+                x = Convert.ToDouble(DirX.Evaluate(visitor.Scope,visitor));
+                y = Convert.ToDouble(DirY.Evaluate(visitor.Scope,visitor));
+                distance = Convert.ToDouble(Distance.Evaluate(visitor.Scope, visitor));
 
                 int currX = Utils.wall_E.PosX;
                 int currY = Utils.wall_E.PosY;
 
                 for (int step = 0; step < (int)distance; step++)
                 {
-                    Utils.PaintBrush(currX, currY);
-                    Utils.ChangeCellColor(currX, currY, Utils.wall_E.PaintBrush);
-                    currX += (int)x;
-                    currY += (int)y;
+                    if (Utils.CheckRange(currX, currY))
+                    {
+                        Utils.PaintBrush(currX, currY);
+                        Utils.ChangeCellColor(currX, currY, Utils.wall_E.PaintBrush);
+                        currX += (int)x;
+                        currY += (int)y;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Error en tiempo de ejecución: La posición ({currX}, {currY}) está fuera de los límites del canvas.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
-
+                if(!Utils.CheckRange(currX, currY))
+                    throw new Exception($"Error en tiempo de ejecución: La posición final de Wall-E ({currX}, {currY}) está fuera de los límites del canvas.");
+                Utils.PaintBrush(currX, currY);
                 Utils.wall_E.PosX = currX;
                 Utils.wall_E.PosY = currY;
             }
-
         }
     }
     public class DrawCircle : Instructions
@@ -175,15 +181,15 @@ namespace Pixel_Walle
             }
             return check;
         }
-        public override void Evaluate(IScope scope)
+        public override void Evaluate(IVisitor visitor)
         {
             double dirX, dirY, radius;
 
             if (DirX != null && DirY != null && Radius != null)
             {
-                dirX = Convert.ToDouble(DirX.Evaluate());
-                dirY = Convert.ToDouble(DirY.Evaluate());
-                radius = Convert.ToDouble(Radius.Evaluate());
+                dirX = Convert.ToDouble(DirX.Evaluate(visitor.Scope, visitor));
+                dirY = Convert.ToDouble(DirY.Evaluate(visitor.Scope, visitor));
+                radius = Convert.ToDouble(Radius.Evaluate(visitor.Scope, visitor));
 
                 int centerX = Utils.wall_E.PosX + (int)dirX * (int)radius;
                 int centerY = Utils.wall_E.PosY + (int)dirY * (int)radius;
@@ -266,17 +272,17 @@ namespace Pixel_Walle
 
             return check;
         }
-        public override void Evaluate(IScope scope)
+        public override void Evaluate(IVisitor visitor)
         {
             int dirX, dirY, distance, width, height;
 
             if (DirX != null && DirY != null && Distance != null && Width != null && Height != null)
             {
-                dirX = Convert.ToInt32(DirX.Evaluate());
-                dirY = Convert.ToInt32(DirY.Evaluate());
-                distance = Convert.ToInt32(Distance.Evaluate());
-                height = Convert.ToInt32(Width.Evaluate());
-                width = Convert.ToInt32(Height.Evaluate());
+                dirX = Convert.ToInt32(DirX.Evaluate(visitor.Scope, visitor));
+                dirY = Convert.ToInt32(DirY.Evaluate(visitor.Scope, visitor));
+                distance = Convert.ToInt32(Distance.Evaluate(visitor.Scope, visitor));
+                height = Convert.ToInt32(Width.Evaluate(visitor.Scope, visitor));
+                width = Convert.ToInt32(Height.Evaluate(visitor.Scope, visitor));
 
                 int centerX = Utils.wall_E.PosX + dirX * distance;
                 int centerY = Utils.wall_E.PosY + dirY * distance;
@@ -313,35 +319,61 @@ namespace Pixel_Walle
         {
             return true;
         }
-        public override void Evaluate(IScope scope)
+        public override void Evaluate(IVisitor visitor)
         {
             int startX = Utils.wall_E.PosX; // Posición inicial X
             int startY = Utils.wall_E.PosY; // Posición inicial Y
             string targetColor = Utils.cellMatrix[startY, startX].Background.ToString(); // Color inicial de la celda
-
+            string brushColor = Utils.wall_E.PaintBrush; // Color de la brocha
+          
             // Si el color del pincel es igual al color objetivo, no hace falta llenar
-            if (Utils.wall_E.PaintBrush == targetColor)
+            if (targetColor == brushColor)
                 return;
 
             // Cola para realizar el llenado por propagación
-            Queue<(int, int)> queue = new Queue<(int, int)>();
+            var queue = new Queue<(int x, int y)>();
             queue.Enqueue((startX, startY));
+
+            // Direcciones para moverse (arriba, abajo, izquierda, derecha)
+            int[] dx = { 0, 0, -1, 1 };
+            int[] dy = { -1, 1, 0, 0 };
+
+            // Conjunto para rastrear las celdas visitadas
+            var visited = new HashSet<(int x, int y)>();
 
             while (queue.Count > 0)
             {
-                var (cx, cy) = queue.Dequeue();
+                var (x, y) = queue.Dequeue();
 
-                // Verificar si la celda está dentro del canvas y si tiene el color objetivo
-                if (Utils.CheckRange(cx, cy) && Utils.cellMatrix[cy, cx].Background.ToString() == targetColor)
+                // Verificar si la celda está dentro del canvas
+                if (!Utils.CheckRange(x, y))
+                    continue;
+
+                // Verificar si la celda ya fue visitada
+                if (visited.Contains((x, y)))
+                    continue;
+
+                // Verificar si la celda tiene el color objetivo
+                if (Utils.cellMatrix[x, y].Background.ToString() != targetColor)
+                    continue;
+
+                // Pintar la celda con el color de la brocha
+                Utils.ChangeCellColor(x, y, brushColor);
+
+                // Marcar la celda como visitada
+                visited.Add((x, y));
+
+                // Expandir a las 4 direcciones
+                for (int d = 0; d < 4; d++)
                 {
-                    // Pintar la celda con el color del pincel
-                    Utils.ChangeCellColor(cy, cx, Utils.wall_E.PaintBrush);
+                    int nx = x + dx[d];
+                    int ny = y + dy[d];
 
-                    // Añadir vecinos (arriba, abajo, izquierda, derecha) a la cola
-                    queue.Enqueue((cx + 1, cy));
-                    queue.Enqueue((cx - 1, cy));
-                    queue.Enqueue((cx, cy + 1));
-                    queue.Enqueue((cx, cy - 1));
+                    // Agregar la celda vecina a la cola si no ha sido visitada
+                    if (Utils.CheckRange(nx, ny) && !visited.Contains((nx, ny)))
+                    {
+                        queue.Enqueue((nx, ny));
+                    }
                 }
             }
         }
@@ -364,17 +396,24 @@ namespace Pixel_Walle
             return check;
         }
 
-        public override void Evaluate(IScope scope)
+        public override void Evaluate(IVisitor visitor)
         {
-            //Utils.variables.Add();
+            visitor.Define(Name?.Value, Value?.Evaluate(visitor.Scope, visitor));
         }
-        
+        public virtual object? Evaluate(IScope scope)
+        {
+            if (Value is not null)
+            {
+                return Value.Evaluate(scope);
+            }
+            return null;
+        }
+
     }
     public class GoTo : Instructions
     {
         public Statement? Condition;
         public Token? Label_;
-
         public override bool CheckSemantic(IScope scope)
         {
             bool check = true;
@@ -390,46 +429,53 @@ namespace Pixel_Walle
             }
             return check;
         }
-
-        public override void Evaluate(IScope scope)
+        public override void Evaluate(IVisitor visitor)
         {
             if (Condition != null)
-            {
-                if (Convert.ToBoolean(Condition.Evaluate()))
+            { 
+                if (Convert.ToBoolean(Condition.Evaluate(visitor.Scope, visitor)))
                 {
-                    if (Label_ != null && Utils.keyLabelsReferences.ContainsKey(Label_.Value))
-                        Utils.keyLabelsReferences[Label_.Value.ToString()].Evaluate(scope);
+                    if (Label_ != null)
+                    {
+                        if (Utils.keyLabelsReferences.ContainsKey(Label_.Value))
+                        {
+                            Utils.keyLabelsReferences[Label_.Value.ToString()].Evaluate(visitor);
+                            Utils.CycleCodition = true;
+                        }
+                        else
+                            Utils.CycleCodition = false;
+                    }
                 }
             }
         }
-        public class Label : Instructions
+    }
+    public class Label : Instructions
+    {
+        public Token? Value;
+        public Label? SubLabel;
+        public List<Instructions?> Instructions = new List<Instructions?>();
+        public override bool CheckSemantic(IScope scope)
         {
-            public Token? Value;
-            public Label? SubLabel;
-            public List<Instructions?> Instructions = new List<Instructions?>();
-            public override bool CheckSemantic(IScope scope)
+            bool check = true;
+            foreach (var instruction in Instructions)
             {
-                bool check = true;
-                foreach (var instruction in Instructions)
-                {
-                    if ((instruction is not null) && (!instruction.CheckSemantic(scope)))
-                        check = false;
-
-                }
-                if (SubLabel is not null && (!SubLabel.CheckSemantic(scope)))
+                if ((instruction is not null) && (!instruction.CheckSemantic(scope)))
                     check = false;
-
-
-                return check;
             }
-            public override void Evaluate(IScope scope)
+            if (SubLabel is not null && (!SubLabel.CheckSemantic(scope)))
+                check = false;
+
+            return check;
+        }
+        public override void Evaluate(IVisitor visitor)
+        {  
+            foreach (var instruction in Instructions)
             {
-                foreach (var instruction in Instructions)
-                    instruction?.Evaluate(scope);
-                
-                if (SubLabel != null) 
-                    SubLabel.Evaluate(scope);
+                instruction?.Evaluate(visitor);
+                if (Utils.CycleCodition) break;
             }
+            if (SubLabel is not null && !Utils.CycleCodition)
+                SubLabel.Evaluate(visitor);      
         }
     }
 }

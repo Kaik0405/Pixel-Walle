@@ -12,12 +12,12 @@ namespace Pixel_Walle
 {
     public static class Utils
     {
-        public static Border[,] cellMatrix = new Border[10,10];
-        public static Wall_E wall_E = new Wall_E(0,0,"");
+        public static bool CycleCodition = false;
+        public static Border[,] cellMatrix = new Border[10, 10];
+        public static Wall_E wall_E = new Wall_E(0, 0, "");
         public enum ReturnType { Bool, Number, NULL }
         public static List<string> Errors = new List<string>();
-        public static Dictionary<string, GoTo.Label> keyLabelsReferences = new Dictionary<string, GoTo.Label>();
-        public static Dictionary<string,Variable> variables = new Dictionary<string, Variable>();
+        public static Dictionary<string, Label> keyLabelsReferences = new Dictionary<string, Label>();
         public static HashSet<string> Colors = new HashSet<string>()
         {
             "Red","Blue","Green","Yellow","Orange","Purple","Black","White","Transparent"
@@ -123,21 +123,21 @@ namespace Pixel_Walle
         {
             if (row < 0 || column < 0)
             { return false; }
-            if(row > cellMatrix.GetLength(0) || column > cellMatrix.GetLength(1)) 
+            if (row >= cellMatrix.GetLength(0) || column >= cellMatrix.GetLength(1))
             { return false; }
 
             return true;
         }
-        public static void PaintBrush(int x,int y)
+        public static void PaintBrush(int x, int y)
         {
             int distance = 0;
             if (wall_E.WidthPaint >= 2)
             {
                 distance = (wall_E.WidthPaint - 1) / 2;
             }
-            for(int dx = -distance; dx <= distance; dx++)
+            for (int dx = -distance; dx <= distance; dx++)
             {
-                for(int dy = - distance; dy <= distance;dy++)
+                for (int dy = -distance; dy <= distance; dy++)
                 {
                     int px = x + dx;
                     int py = y + dy;
@@ -148,6 +148,13 @@ namespace Pixel_Walle
                     }
                 }
             }
+        }
+        public static void Reset()
+        {
+            CycleCodition = false;
+            Errors.Clear();
+            keyLabelsReferences.Clear();
+            wall_E = new Wall_E(0, 0, "");
         }
     }
 }

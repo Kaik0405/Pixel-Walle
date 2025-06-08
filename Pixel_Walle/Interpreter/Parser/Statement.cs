@@ -38,16 +38,15 @@ namespace Pixel_Walle
             }
             return true;
         }
-
-        public object? Evaluate()
+        public object? Evaluate(IScope? scope,IVisitor? visitor = null)
         {
             if (SubState != null)
             {
                 if (State != null)
                 {
-                    return Convert.ToBoolean(SubState.Evaluate()) && Convert.ToBoolean(State.Evaluate());
+                    return Convert.ToBoolean(SubState.Evaluate(scope,visitor)) && Convert.ToBoolean(State.Evaluate(scope,visitor));
                 }
-                return SubState.Evaluate();
+                return SubState.Evaluate(scope, visitor);
             }
             return null;
         }
@@ -91,21 +90,19 @@ namespace Pixel_Walle
             }
             return true;
         }
-
-        public object? Evaluate()
+        public object? Evaluate(IScope? scope,IVisitor? visitor = null)
         {
             if (Mol != null)
             {
                 if (SubState != null)
                 {
-                    return Convert.ToBoolean(Mol.Evaluate()) || Convert.ToBoolean(SubState.Evaluate());
+                    return Convert.ToBoolean(Mol.Evaluate(scope,visitor)) || Convert.ToBoolean(SubState.Evaluate(scope,visitor));
                 }
-                return Mol.Evaluate();
+                return Mol.Evaluate(scope,visitor);
             }
             return null;
         }
-
-        internal Utils.ReturnType? GetType(IScope scope)
+        public Utils.ReturnType? GetType(IScope scope)
         {
             if (Mol != null)
                 return Mol.GetType(scope);
@@ -152,16 +149,15 @@ namespace Pixel_Walle
             }
             return check;
         }
-
-        public object? Evaluate()
+        public object? Evaluate(IScope? scope, IVisitor? visitor = null)
         {
             if (Atoms != null)
             {
                 if (Mol != null)
                 {
-                    return Utils.Compare(Convert.ToDouble(Atoms.Evaluate()), Convert.ToDouble(Mol.Evaluate()), Symbol);
+                    return Utils.Compare(Convert.ToDouble(Atoms.Evaluate(scope,visitor)), Convert.ToDouble(Mol.Evaluate(scope, visitor)), Symbol);
                 }
-                else return Atoms.Evaluate();
+                else return Atoms.Evaluate(scope, visitor);
             }
             return null;
         }
@@ -175,7 +171,7 @@ namespace Pixel_Walle
     }
     public abstract class Atom
     {
-        public abstract object? Evaluate();
+        public abstract object? Evaluate(IScope? scope, IVisitor? visitor = null);
         public abstract bool CheckSemantic(IScope scope);
         public abstract Utils.ReturnType? GetType(IScope scope);
     }
@@ -187,15 +183,13 @@ namespace Pixel_Walle
         {
             return true;
         }
-
-        public override object? Evaluate()
+        public override object? Evaluate(IScope? scope, IVisitor? visitor = null)
         {
             if (Value != null)
                 return Convert.ToBoolean(Value.Value);
 
             return null;
         }
-
         public override Utils.ReturnType? GetType(IScope scope)
         {
             return Utils.ReturnType.Bool;

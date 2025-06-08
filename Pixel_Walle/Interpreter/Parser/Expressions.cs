@@ -36,23 +36,22 @@ namespace Pixel_Walle
             }
             return true;
         }
-        public override object? Evaluate()
+        public override object? Evaluate(IScope? scope, IVisitor? visitor = null)
         {
             if (Terms != null)
             {
                 if (Expressions != null)
                 {
-                    double a = Convert.ToDouble(Terms.Evaluate());
-                    double b = Convert.ToDouble(Expressions.Evaluate());
+                    double a = Convert.ToDouble(Terms.Evaluate(scope,visitor));
+                    double b = Convert.ToDouble(Expressions.Evaluate(scope,visitor));
 
                     return Utils.Operation(a, b, Operator);
                 }
                 else
-                    return Terms.Evaluate();
+                    return Terms.Evaluate(scope, visitor);
             }
             return 0;
         }
-
         public override Utils.ReturnType? GetType(IScope? scope)
         {
             if (Terms is not null)
@@ -98,19 +97,19 @@ namespace Pixel_Walle
             }
             return true;
         }
-        public object? Evaluate()
+        public object? Evaluate(IScope? scope, IVisitor? visitor = null)
         {
             if (Factor != null)
             {
                 if (Terms != null)
                 {
-                    double a = Convert.ToDouble(Factor.Evaluate());
-                    double b = Convert.ToDouble(Terms.Evaluate());
+                    double a = Convert.ToDouble(Factor.Evaluate(scope,visitor));
+                    double b = Convert.ToDouble(Terms.Evaluate(scope, visitor));
 
                     return Utils.Operation(a, b, Operator);
                 }
                 else
-                    return Factor.Evaluate();
+                    return Factor.Evaluate(scope,visitor);
             }
             return 0;
         }
@@ -163,13 +162,17 @@ namespace Pixel_Walle
                 return true;
             }
         }
-        public object? Evaluate()
+        public object? Evaluate(IScope? scope, IVisitor? visitor = null)
         {
             if (Value != null)
             {
                 if (Value.Type == Token.TokenType.Digit)
                     return double.Parse(Value.Value);
-
+                
+                else if (Value.Type == Token.TokenType.UnKnown)
+                {
+                     return visitor?.Defined[Value.Value];
+                }
                 else
                 {
                     string mensajeError = $"El carácter de la línea {Value.Line} y columna {Value.Column} no se encuentra declarado o no es válido";
@@ -177,7 +180,10 @@ namespace Pixel_Walle
                     throw new ArgumentException(mensajeError);
                 }
             }
-            else return Expressions?.Evaluate();
+            if (Functions != null)
+                return Functions.Evaluate(scope, visitor);
+            
+            else return Expressions?.Evaluate(scope,visitor);
         }
     }
 

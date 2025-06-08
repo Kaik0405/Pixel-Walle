@@ -60,14 +60,6 @@ namespace Pixel_Walle
             }
             return false;
         }// Si chose es <true> y alguno de estos elementos coincide con el próximo, avanza y retorna true. Else retorna <true>
-        private bool LookBeyond(params Token.TokenType[] nextTokens)
-        {
-            for (int i = 0; i < nextTokens.Length; i++)
-                if (ThereIsNext(i + 1) && nextTokens[i] != LookAhead(i + 1)?.Type)
-                    return false;
-
-            return true;
-        }       // Retorna <true> si los siguientes Tokens corresponden con la secuencia pasada por parámetro
         private void Match()
         {
             if (ThereIsNext())
@@ -599,9 +591,9 @@ namespace Pixel_Walle
         }
 
         //Label
-        private GoTo.Label LabelBuilder()
+        private Label LabelBuilder()
         {
-            GoTo.Label label = new GoTo.Label();
+            Label label = new Label();
 
             label.Value = LookAhead();
 
@@ -633,12 +625,10 @@ namespace Pixel_Walle
                     }
                     else
                         label.SubLabel = LabelBuilder();
-
                 }
                 else
                     label.Instructions.Add(InstructionsBuilder());
             }
-
             return label;
         }
     }

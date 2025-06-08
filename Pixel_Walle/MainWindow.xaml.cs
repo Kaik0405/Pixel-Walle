@@ -19,11 +19,8 @@ namespace Pixel_Walle
             InitializeComponent();
             InitializeCanvas(10, 10); // Dimensiones iniciales del canvas
         }
-
         public void Execute(object sender, RoutedEventArgs e)
         {
-            Utils.Errors.Clear();
-            Utils.keyLabelsReferences.Clear();
             RunExecute(sender, e);
         }
         private void RunExecute(object sender, RoutedEventArgs e)
@@ -62,7 +59,8 @@ namespace Pixel_Walle
                     {
                         try
                         {
-                            ast.Evaluate(scope);
+                            IVisitor visitor = new Visitor();
+                            ast.Evaluate(visitor);
                         }
                         catch (Exception ex)
                         {
@@ -75,6 +73,7 @@ namespace Pixel_Walle
             {
                 MessageBox.Show("Escriba código en el editor antes de ejecutar.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            Utils.Reset();
         }
         private void InitializeCanvas(int rows, int columns)
         {

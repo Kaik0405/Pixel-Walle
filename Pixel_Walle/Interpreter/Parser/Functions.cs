@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace Pixel_Walle
@@ -11,7 +12,7 @@ namespace Pixel_Walle
     public abstract class Functions
     {
         public abstract bool CheckSemantic(IScope scope);
-        public abstract object Evaluate();
+        public abstract object Evaluate(IScope? scope, IVisitor? visitor = null);
         public abstract Utils.ReturnType GetType(IScope? scope);
     }
     public class GetActualX : Functions
@@ -20,12 +21,10 @@ namespace Pixel_Walle
         {
             return true;
         }
-
-        public override object Evaluate()
+        public override object Evaluate(IScope? scope, IVisitor? visitor = null)
         {
             return Utils.wall_E.PosX;
         }
-
         public override Utils.ReturnType GetType(IScope? scope)
         {
             return Utils.ReturnType.Number;
@@ -37,12 +36,10 @@ namespace Pixel_Walle
         {
             return true;
         }
-
-        public override object Evaluate()
+        public override object Evaluate(IScope? scope, IVisitor? visitor = null)
         {
             return Utils.wall_E.PosY;
         }
-
         public override Utils.ReturnType GetType(IScope? scope)
         {
             return Utils.ReturnType.Number;
@@ -54,12 +51,10 @@ namespace Pixel_Walle
         {
             return true;
         }
-
-        public override object Evaluate()
+        public override object Evaluate(IScope? scope, IVisitor? visitor = null)
         {
             return Utils.cellMatrix.GetLength(0);
         }
-
         public override Utils.ReturnType GetType(IScope? scope)
         {
             return Utils.ReturnType.Number;
@@ -100,13 +95,13 @@ namespace Pixel_Walle
 
             return check;
         }
-        public override object Evaluate()
+        public override object Evaluate(IScope? scope, IVisitor? visitor = null)
         {
-            string color = Color?.ToString() ?? "Transparent";
-            int x1 = Convert.ToInt32(X1?.Evaluate());
-            int y1 = Convert.ToInt32(Y1?.Evaluate());
-            int x2 = Convert.ToInt32(X2?.Evaluate());
-            int y2 = Convert.ToInt32(Y2?.Evaluate());
+            string color = Color?.Value ?? "Transparent";
+            int x1 = Convert.ToInt32(X1?.Evaluate(scope, visitor));
+            int y1 = Convert.ToInt32(Y1?.Evaluate(scope, visitor));
+            int x2 = Convert.ToInt32(X2?.Evaluate(scope, visitor));
+            int y2 = Convert.ToInt32(Y2?.Evaluate(scope, visitor));
             
             if (!Utils.CheckRange(x1, y1) || !Utils.CheckRange(x2, y2)) 
                 return 0;
@@ -147,9 +142,9 @@ namespace Pixel_Walle
         {
             return true;
         }
-        public override object Evaluate()
+        public override object Evaluate(IScope? scope, IVisitor? visitor = null)
         {
-            if(Color?.ToString() == Utils.wall_E.PaintBrush)
+            if(Color?.Value == Utils.wall_E.PaintBrush)
                 return 1;
             
             return 0;
@@ -172,9 +167,9 @@ namespace Pixel_Walle
             }
             return true;
         }
-        public override object Evaluate()
+        public override object Evaluate(IScope? scope, IVisitor? visitor = null)
         {
-            int size = Convert.ToInt32(Size?.Evaluate());
+            int size = Convert.ToInt32(Size?.Evaluate(scope, visitor));
             if (size == Utils.wall_E.WidthPaint)
                 return 1;
 
@@ -205,21 +200,20 @@ namespace Pixel_Walle
                 if (!Utils.CheckFunction("IsCanvasColor", Horizontal, scope))
                     check = false;
             }
-
             return check;
         }
 
-        public override object Evaluate()
+        public override object Evaluate(IScope? scope, IVisitor? visitor = null)
         {
-            int x = Convert.ToInt32(Vertical?.Evaluate());
-            int y = Convert.ToInt32(Horizontal?.Evaluate());
+            int x = Convert.ToInt32(Vertical?.Evaluate(scope, visitor));
+            int y = Convert.ToInt32(Horizontal?.Evaluate(scope, visitor));
 
             int posX = Utils.wall_E.PosX + x;
             int posY = Utils.wall_E.PosY + y;
 
             if (!Utils.CheckRange(posX, posY))
                 return 0;
-            if (Utils.cellMatrix[posY, posX].Background.ToString() == Color?.ToString())
+            if (Utils.cellMatrix[posY, posX].Background.ToString() == Color?.Value)
                 return 1;
 
             return 0;
