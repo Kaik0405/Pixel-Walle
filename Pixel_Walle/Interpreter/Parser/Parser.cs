@@ -181,6 +181,12 @@ namespace Pixel_Walle
             else if (LookAhead(false, Token.TokenType.GoTo))
                 return GoToBuilder();
 
+            else if (LookAhead(false, Token.TokenType.Comment))
+            {
+                Match();
+                Recover();
+                return null; // Ignorar comentarios
+            }
             else
             {
                 Utils.Errors.Add($"Error Sintáctico: {LookAhead()?.Value} no es una instrucción correcta Linea:{LookAhead()?.Line} Columna:{LookAhead()?.Column}");

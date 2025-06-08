@@ -81,7 +81,6 @@ namespace Pixel_Walle
             }
         }
         public static bool CheckValidLabel(string? name) => (name?[0] == '_' || name?[name.Length - 1] == '_') ? false : true;
-
         public static bool CheckInstruction(string nameIns, Statement statement, IScope scope)
         {
             bool checking = true;

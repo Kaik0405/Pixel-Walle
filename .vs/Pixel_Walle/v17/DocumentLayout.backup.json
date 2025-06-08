@@ -7,8 +7,24 @@
       "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\utils\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\interpreter\\utils\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\parser\\instructions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\interpreter\\parser\\instructions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\parser\\parser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\interpreter\\parser\\parser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\lexer\\lexer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\interpreter\\lexer\\lexer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\lexer\\token.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\interpreter\\lexer\\token.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\parser\\functions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -25,22 +41,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\parser\\programcompiler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\interpreter\\parser\\programcompiler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\parser\\parser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\interpreter\\parser\\parser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\utils\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\interpreter\\utils\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\lexer\\token.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\interpreter\\lexer\\token.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\lexer\\lexer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|solutionrelative:pixel_walle\\interpreter\\lexer\\lexer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{650BC1D7-180C-4392-A995-B7A519A661B4}|Pixel_Walle\\Pixel_Walle.csproj|d:\\cibern\u00E9tica\\1er a\u00F1o\\4 - programacion\\proyectos\\pixel_walle\\pixel_walle\\interpreter\\semantic\\scope.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -89,7 +89,7 @@
               "RelativeDocumentMoniker": "Pixel_Walle\\MainWindow.xaml.cs",
               "ToolTip": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\MainWindow.xaml.cs",
               "RelativeToolTip": "Pixel_Walle\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAABEAAAAAAAAAAAAgwA0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-10T14:45:54.761Z",
               "IsPinned": true,
@@ -97,33 +97,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 1,
               "Title": "Utils.cs",
               "DocumentMoniker": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Utils\\Utils.cs",
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Utils\\Utils.cs",
               "ToolTip": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Utils\\Utils.cs",
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Utils\\Utils.cs",
-              "ViewState": "AgIAAEkAAAAAAAAAAAAAAJ0AAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAIUAAAAAAAAAAAAAAHQAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-19T04:36:21.488Z",
               "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Instructions.cs",
               "DocumentMoniker": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Parser\\Instructions.cs",
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Parser\\Instructions.cs",
               "ToolTip": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Parser\\Instructions.cs",
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Parser\\Instructions.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAswEIAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAEAAAAAAAAAAAA1wOABAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-07T02:06:59.242Z",
               "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "Functions.cs",
               "DocumentMoniker": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Parser\\Functions.cs",
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Parser\\Functions.cs",
@@ -136,7 +136,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 7,
               "Title": "Expressions.cs",
               "DocumentMoniker": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Parser\\Expressions.cs",
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Parser\\Expressions.cs",
@@ -149,7 +149,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 8,
               "Title": "Statement.cs",
               "DocumentMoniker": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Parser\\Statement.cs",
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Parser\\Statement.cs",
@@ -162,7 +162,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 9,
               "Title": "ProgramCompiler.cs",
               "DocumentMoniker": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Parser\\ProgramCompiler.cs",
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Parser\\ProgramCompiler.cs",
@@ -187,13 +187,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 3,
               "Title": "Parser.cs",
               "DocumentMoniker": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Parser\\Parser.cs",
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Parser\\Parser.cs",
               "ToolTip": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Parser\\Parser.cs",
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Parser\\Parser.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAYwD0AAAB+AAAAAAAAAA==",
+              "ViewState": "AgIAAG4AAAAAAAAAAAAowLIAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-19T02:21:06.28Z"
             },
@@ -223,25 +223,25 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 4,
               "Title": "Lexer.cs",
               "DocumentMoniker": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Lexer\\Lexer.cs",
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Lexer\\Lexer.cs",
               "ToolTip": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Lexer\\Lexer.cs",
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Lexer\\Lexer.cs",
-              "ViewState": "AgIAAGAAAAAAAAAAAAAcwGQAAAAPAAAAAAAAAA==",
+              "ViewState": "AgIAACIAAAAAAAAAAAAswDkAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-10T14:48:01.199Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 5,
               "Title": "Token.cs",
               "DocumentMoniker": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Lexer\\Token.cs",
               "RelativeDocumentMoniker": "Pixel_Walle\\Interpreter\\Lexer\\Token.cs",
               "ToolTip": "D:\\Cibern\u00E9tica\\1er A\u00F1o\\4 - Programacion\\Proyectos\\Pixel_Walle\\Pixel_Walle\\Interpreter\\Lexer\\Token.cs",
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Lexer\\Token.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAB8AAAAUAAAAAAAAAA==",
+              "ViewState": "AgIAABoAAAAAAAAAAAAgwDIAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-10T14:47:39.31Z"
             },

@@ -57,6 +57,7 @@ namespace Pixel_Walle
             {"\\.", Token.TokenType.Dot},
             {",", Token.TokenType.Comma},
             {";", Token.TokenType.SemiColon},
+            { "//", Token.TokenType.Comment},
 
             //Operadores Aritméticos
             {"\\*\\*", Token.TokenType.Pow},

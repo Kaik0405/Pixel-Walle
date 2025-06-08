@@ -48,6 +48,7 @@ namespace Pixel_Walle
             Comma,            // ,
             SemiColon,        // ;
             Arrow,            // =>
+            Comment,          // //
 
             // Operadores Aritméticos
             Pow,              // **
