@@ -197,6 +197,7 @@ namespace Pixel_Walle
             // Actualizar el TextBlock con los números de línea
             LineNumbers.Text = lineNumbers.ToString();
         }
+
     }
 
 }

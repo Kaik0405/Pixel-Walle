@@ -5,8 +5,63 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pixel_Walle"
         mc:Ignorable="d"
-        Title="PIXEL WALL-E" Height="600" Width="1000">
-    <Grid>
+        Title="PIXEL WALL-E" Height="1080" Width="1920">
+    <Window.Resources>
+        <!-- Estilo para botones con bordes redondeados y efecto hover -->
+        <Style TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="#1A1B3B" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="20,12" />
+            <Setter Property="BorderBrush" Value="#2A2B5C" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="15" />
+            <Style.Triggers>
+                <!-- Cambiar el color de fondo cuando el mouse pasa por encima -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2E2F5E" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Estilo para cuadros de texto con bordes redondeados -->
+        <Style TargetType="TextBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="#2A2B5C"
+                                BorderThickness="2"
+                                CornerRadius="8">
+                            <ScrollViewer Margin="3" x:Name="PART_ContentHost" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="#1A1B3B" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="5" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="18" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#1D1E5C">
         <!-- Definimos las filas y columnas del Grid -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -26,35 +81,36 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Números de línea -->
-                <ScrollViewer Name="LineNumberScrollViewer" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" Margin="0,-5,0,0">
-                    <TextBlock Name="LineNumbers" FontFamily="Consolas" FontSize="14" VerticalAlignment="Top" TextAlignment="Right" Padding="5" />
+                <ScrollViewer Name="LineNumberScrollViewer" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" Margin="0,4,0,0">
+                    <TextBlock Name="LineNumbers" FontFamily="Consolas" FontSize="14" VerticalAlignment="Top" TextAlignment="Right" Padding="5" Foreground="White"/>
                 </ScrollViewer>
 
                 <!-- Editor de texto -->
                 <ScrollViewer Name="CodeEditorScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1" ScrollChanged="CodeEditorScrollViewer_ScrollChanged">
-                    <TextBox Name="CodeEditor" AcceptsReturn="True" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="14" TextWrapping="Wrap" TextChanged="CodeEditor_TextChanged" />
+                    <TextBox Name="CodeEditor" AcceptsReturn="True" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="14" TextWrapping="Wrap" TextChanged="CodeEditor_TextChanged" Background="#1A1B3B" Foreground="White" />
                 </ScrollViewer>
             </Grid>
         </DockPanel>
 
         <!-- Canvas cuadriculado -->
-        <ScrollViewer Grid.Row="1" Grid.Column="1" Margin="10">
-            <Grid Name="CanvasGrid" Background="White" ShowGridLines="False">
-                <!-- Las filas y columnas del canvas se generarán dinámicamente en el código detrás -->
-            </Grid>
-        </ScrollViewer>
+        <Grid Grid.Row="1" Grid.Column="1" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Border Background="White" Width="700" Height="700" BorderBrush="#2A2B5C" BorderThickness="2" CornerRadius="10">
+                <Grid Name="CanvasGrid" ShowGridLines="False">
+                    <!-- Las filas y columnas del canvas se generarán dinámicamente en el código detrás -->
+                </Grid>
+            </Border>
+        </Grid>
 
         <!-- Controles superiores -->
         <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-            <TextBlock Text="Dimensiones del Canvas:" VerticalAlignment="Center" Margin="5" />
-            <TextBox Name="CanvasWidthInput" Width="50" Margin="5" Text="10" />
-            <TextBlock Text="x" VerticalAlignment="Center" Margin="5" />
-            <TextBox Name="CanvasHeightInput" Width="50" Margin="5" Text="10" />
-            <Button Name="ResizeCanvasButton" Content="Redimensionar Canvas" Margin="5" Width="150" Click="ResizeCanvasButton_Click" />
-            <Button Name="ExecuteCodeButton" Content="Ejecutar Código" Margin="5" Width="120" Click="Execute" />
-            <Button Name="LoadFileButton" Content="Cargar Archivo" Margin="5" Width="120" Click="LoadFileButton_Click" />
-            <Button Name="SaveFileButton" Content="Guardar Archivo" Margin="5" Width="120" Click="SaveFileButton_Click" />
+            <TextBlock Text="Dimensiones del Canvas:" FontFamily="Consolas" FontSize="18" VerticalAlignment="Center" Margin="5" Foreground="White"/>
+            <TextBox Name="CanvasWidthInput" Width="50" Margin="5" Text="10" Height="40" />
+            <TextBlock Text="X" VerticalAlignment="Center" Margin="5" Foreground="White" FontFamily="Consolas" FontSize="1"/>
+            <TextBox Name="CanvasHeightInput" Width="50" Margin="5" Text="10" Height="40" />
+            <Button Name="ResizeCanvasButton" Content="Redimensionar Canvas" Margin="10" Width="200" Height="40" Click="ResizeCanvasButton_Click" />
+            <Button Name="ExecuteCodeButton" Content="Ejecutar Código" Margin="10" Width="170" Height="40" Click="Execute" />
+            <Button Name="LoadFileButton" Content="Cargar Archivo" Margin="10" Width="170" Height="40" Click="LoadFileButton_Click" />
+            <Button Name="SaveFileButton" Content="Guardar Archivo" Margin="10" Width="170" Height="40" Click="SaveFileButton_Click" />
         </StackPanel>
     </Grid>
 </Window>
-
