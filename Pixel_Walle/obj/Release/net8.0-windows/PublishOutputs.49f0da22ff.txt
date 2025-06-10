@@ -1,0 +1,5 @@
+D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixe Wall-E\Utiles\Pixel_Walle.exe
+D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixe Wall-E\Utiles\Pixel_Walle.dll
+D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixe Wall-E\Utiles\Pixel_Walle.deps.json
+D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixe Wall-E\Utiles\Pixel_Walle.runtimeconfig.json
+D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixe Wall-E\Utiles\Pixel_Walle.pdb
