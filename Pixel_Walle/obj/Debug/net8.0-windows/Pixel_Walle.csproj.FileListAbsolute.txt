@@ -17,5 +17,4 @@ D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixel_Walle\Pixel_Walle\obj\
 D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixel_Walle\Pixel_Walle\obj\Debug\net8.0-windows\Pixel_Walle.pdb
 D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixel_Walle\Pixel_Walle\obj\Debug\net8.0-windows\Pixel_Walle.genruntimeconfig.cache
 D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixel_Walle\Pixel_Walle\obj\Debug\net8.0-windows\ref\Pixel_Walle.dll
-D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixel_Walle\Pixel_Walle\obj\Debug\net8.0-windows\Pixel_Walle_MarkupCompile.lref
 D:\Cibernética\1er Año\4 - Programacion\Proyectos\Pixel_Walle\Pixel_Walle\obj\Debug\net8.0-windows\Pixel_Walle.sourcelink.json

@@ -17,6 +17,7 @@ namespace Pixel_Walle
         public MainWindow()
         {
             InitializeComponent();
+            this.WindowState = WindowState.Maximized;
             InitializeCanvas(10, 10); // Dimensiones iniciales del canvas
         }
         public void Execute(object sender, RoutedEventArgs e)
@@ -197,7 +198,9 @@ namespace Pixel_Walle
             // Actualizar el TextBlock con los números de línea
             LineNumbers.Text = lineNumbers.ToString();
         }
-
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
-
 }
