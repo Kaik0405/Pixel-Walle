@@ -170,5 +170,33 @@ namespace Pixel_Walle
                 CodeEditor.Text = System.IO.File.ReadAllText(openFileDialog.FileName);
             }
         } //Cargar archivo con extension (.gw)
+
+        private void CodeEditor_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateLineNumbers();
+        }
+
+        private void CodeEditorScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            // Sincronizar el scroll de los números de línea con el editor de texto
+            LineNumberScrollViewer.ScrollToVerticalOffset(CodeEditorScrollViewer.VerticalOffset);
+        }
+
+        private void UpdateLineNumbers()
+        {
+            // Obtener el número total de líneas en el editor de texto
+            int totalLines = CodeEditor.LineCount;
+
+            // Generar los números de línea
+            StringBuilder lineNumbers = new StringBuilder();
+            for (int i = 1; i <= totalLines; i++)
+            {
+                lineNumbers.AppendLine(i.ToString());
+            }
+
+            // Actualizar el TextBlock con los números de línea
+            LineNumbers.Text = lineNumbers.ToString();
+        }
     }
+
 }

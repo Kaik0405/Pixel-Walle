@@ -167,7 +167,7 @@ namespace Pixel_Walle
             if (Atoms != null && Mol != null)
                 return Utils.ReturnType.Bool;
             if (Atoms != null)
-                return Atoms.GetType(scope)
+                return Atoms.GetType(scope);
             
             return Utils.ReturnType.NULL;
         }

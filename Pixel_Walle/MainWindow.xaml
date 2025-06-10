@@ -19,7 +19,22 @@
 
         <!-- Editor de texto con números de línea -->
         <DockPanel Grid.Row="1" Grid.Column="0" Margin="10">
-            <TextBox Name="CodeEditor" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="14" TextWrapping="Wrap" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Números de línea -->
+                <ScrollViewer Name="LineNumberScrollViewer" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" Margin="0,-5,0,0">
+                    <TextBlock Name="LineNumbers" FontFamily="Consolas" FontSize="14" VerticalAlignment="Top" TextAlignment="Right" Padding="5" />
+                </ScrollViewer>
+
+                <!-- Editor de texto -->
+                <ScrollViewer Name="CodeEditorScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1" ScrollChanged="CodeEditorScrollViewer_ScrollChanged">
+                    <TextBox Name="CodeEditor" AcceptsReturn="True" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="14" TextWrapping="Wrap" TextChanged="CodeEditor_TextChanged" />
+                </ScrollViewer>
+            </Grid>
         </DockPanel>
 
         <!-- Canvas cuadriculado -->

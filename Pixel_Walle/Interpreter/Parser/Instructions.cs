@@ -306,7 +306,6 @@ namespace Pixel_Walle
                 Utils.wall_E.PosX = centerX;
                 Utils.wall_E.PosY = centerY;
             }
-
         }
     }
     public class Fill : Instructions
