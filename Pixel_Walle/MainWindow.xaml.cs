@@ -102,7 +102,7 @@ namespace Pixel_Walle
                     {
                         Background = Brushes.White, // Color inicial de la celda
                         BorderBrush = Brushes.Gray, // Color del borde
-                        BorderThickness = new Thickness(0.5) // Grosor del borde
+                        BorderThickness = new Thickness(0.0) // Grosor del borde
                     };
 
                     // Ubicar la celda en la posición correspondiente

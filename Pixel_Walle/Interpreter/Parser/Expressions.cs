@@ -186,5 +186,4 @@ namespace Pixel_Walle
             else return Expressions?.Evaluate(scope,visitor);
         }
     }
-
 }

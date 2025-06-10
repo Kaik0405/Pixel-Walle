@@ -24,7 +24,7 @@ namespace Pixel_Walle
                     Utils.Errors.Add($"Error Semántico: No se puede establecer una relación entre tipos \"{SubState.GetType(scope)}\" y \"{State.GetType(scope)}\" mediante el operador \"&&\". Linea: {Symbol?.Line} Column: {Symbol?.Column} ");
                     return false;
                 }
-                if (SubState.GetType(scope) == Utils.ReturnType.Number && SubState.GetType(scope) == Utils.ReturnType.Number)
+                if (SubState.GetType(scope) == Utils.ReturnType.Number && State.GetType(scope) == Utils.ReturnType.Number)
                 {
                     Utils.Errors.Add($"Error Semántico: No se puede establecer una relación entre tipos \"{SubState.GetType(scope)}\" y \"{State.GetType(scope)}\" mediante el operador \"&&\" . Linea: {Symbol?.Line} Column: {Symbol?.Column}");
                     return false;
@@ -164,8 +164,11 @@ namespace Pixel_Walle
 
         public Utils.ReturnType? GetType(IScope scope)
         {
+            if (Atoms != null && Mol != null)
+                return Utils.ReturnType.Bool;
             if (Atoms != null)
-                return Atoms.GetType(scope);
+                return Atoms.GetType(scope)
+            
             return Utils.ReturnType.NULL;
         }
     }

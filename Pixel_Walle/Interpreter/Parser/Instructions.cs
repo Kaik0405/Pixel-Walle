@@ -142,10 +142,6 @@ namespace Pixel_Walle
                         currX += (int)x;
                         currY += (int)y;
                     }
-                    else
-                    {
-                        MessageBox.Show($"Error en tiempo de ejecución: La posición ({currX}, {currY}) está fuera de los límites del canvas.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
                 }
                 if(!Utils.CheckRange(currX, currY))
                     throw new Exception($"Error en tiempo de ejecución: La posición final de Wall-E ({currX}, {currY}) está fuera de los límites del canvas.");

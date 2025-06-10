@@ -19,7 +19,5 @@ namespace Pixel_Walle.Interpreter.Evaluate
             PaintBrush = paint;
             WidthPaint = 1;
         }
-
-
     }
 }

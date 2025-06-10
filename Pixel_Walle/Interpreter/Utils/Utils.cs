@@ -53,8 +53,7 @@ namespace Pixel_Walle
                         return a / b;
                     else
                     {
-                        Errors.Add($"Error: No se puede dividir por 0 Linea: {value.Line}, Column: {value.Column}");
-                        return 0;
+                        throw new Exception("Error en Tiempo de Ejecución: No se puede dividir entre 0");
                     }
                 case Token.TokenType.Module:
                     return a % b;
