@@ -90,7 +90,6 @@ namespace Pixel_Walle
                     size = size - 1;
 
                 Utils.wall_E.WidthPaint = (int)size;
-
             }
         }
     }
