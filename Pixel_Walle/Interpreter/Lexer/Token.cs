@@ -73,16 +73,6 @@ namespace Pixel_Walle
             Digit,           // 1354 
             UnKnown,          // UserText
 
-            //Colors
-            Red,
-            Blue,
-            Green,
-            Yellow,
-            Orange,
-            Purple,
-            Black,
-            White,
-            Transparent,
         }
         public TokenType Type { get; set; }
         public string Value { get; set; }

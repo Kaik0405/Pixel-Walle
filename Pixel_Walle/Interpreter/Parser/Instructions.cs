@@ -57,11 +57,22 @@ namespace Pixel_Walle
 
         public override bool CheckSemantic(IScope scope)
         {
-            return true;
+            if(Value != null)
+            {
+                if(Utils.Colors.Contains(Value.Value))
+                    return true;
+                else
+                {
+                    Utils.Errors.Add($"Error Semántico: \"{Value.Value}\" no es un color valido. Linea: {Value.Line} Columna: {Value.Column} ");
+                    return false;
+                }
+            }
+            return false;
         }
         public override void Evaluate(IVisitor visitor)
         {
-            Utils.wall_E.PaintBrush = Value?.Value ?? "Transparent";
+            if(Value != null) 
+                Utils.wall_E.PaintBrush = Value.Value;
         }
     }
     public class Size : Instructions
@@ -319,7 +330,7 @@ namespace Pixel_Walle
             int startY = Utils.wall_E.PosY; // Posición inicial Y
             string targetColor = Utils.cellMatrix[startY, startX].Background.ToString(); // Color inicial de la celda
             string brushColor = Utils.wall_E.PaintBrush; // Color de la brocha
-          
+
             // Si el color del pincel es igual al color objetivo, no hace falta llenar
             if (targetColor == brushColor)
                 return;

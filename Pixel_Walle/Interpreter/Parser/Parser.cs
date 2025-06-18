@@ -445,8 +445,7 @@ namespace Pixel_Walle
             Match(Token.TokenType.OpenParan);
             Match(Token.TokenType.Quote);
 
-            color.Value = DetectorError ? null : MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
-                Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
+            color.Value = DetectorError ? null : MatchReturn();
 
             Match(Token.TokenType.Quote);
             Match(Token.TokenType.ClosedParan);
@@ -513,9 +512,7 @@ namespace Pixel_Walle
             Match(Token.TokenType.OpenParan);
 
             Match(Token.TokenType.Quote);
-            getColorCount.Color = DetectorError ? null : MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
-                Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
-            Match(Token.TokenType.Quote);
+            getColorCount.Color = DetectorError ? null : MatchReturn();
 
             Match(Token.TokenType.Comma);
             getColorCount.X1 = DetectorError ? null : StatementBuilder();
@@ -537,8 +534,7 @@ namespace Pixel_Walle
 
             Match(Token.TokenType.OpenParan);
             Match(Token.TokenType.Quote);
-            isBrushColor.Color = DetectorError ? null : MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
-                Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
+            isBrushColor.Color = DetectorError ? null : MatchReturn();
             Match(Token.TokenType.Quote);
             Match(Token.TokenType.ClosedParan);
 
@@ -565,8 +561,7 @@ namespace Pixel_Walle
             Match(Token.TokenType.OpenParan);
 
             Match(Token.TokenType.Quote);
-            isCanvasColor.Color = DetectorError ? null : MatchReturn(Token.TokenType.Red, Token.TokenType.Blue, Token.TokenType.Green, Token.TokenType.Yellow,
-                Token.TokenType.Orange, Token.TokenType.Purple, Token.TokenType.Black, Token.TokenType.White, Token.TokenType.Transparent);
+            isCanvasColor.Color = DetectorError ? null : MatchReturn();
             Match(Token.TokenType.Quote);
 
             Match(Token.TokenType.Comma);

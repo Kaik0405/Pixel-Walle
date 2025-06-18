@@ -92,7 +92,16 @@ namespace Pixel_Walle
                 if (!Utils.CheckFunction("GetColorCount", Y2, scope))
                     check = false;
             }
-
+            if (Color != null)
+            {
+                if (Utils.Colors.Contains(Color.Value))
+                    check = false;
+                else
+                {
+                    Utils.Errors.Add($"Error Semántico: \"{Color.Value}\" no es un color valido. Linea: {Color.Line} Columna: {Color.Column} ");
+                    check = false;
+                }
+            }
             return check;
         }
         public override object Evaluate(IScope? scope, IVisitor? visitor = null)
@@ -140,7 +149,17 @@ namespace Pixel_Walle
 
         public override bool CheckSemantic(IScope scope)
         {
-            return true;
+            if (Color != null)
+            {
+                if (Utils.Colors.Contains(Color.Value))
+                    return true;
+                else
+                {
+                    Utils.Errors.Add($"Error Semántico: \" {Color.Value}\" no es un color valido. Linea: {Color.Line} Columna: {Color.Column} ");
+                    return false;
+                }
+            }
+            return false;
         }
         public override object Evaluate(IScope? scope, IVisitor? visitor = null)
         {
@@ -200,6 +219,17 @@ namespace Pixel_Walle
                 if (!Utils.CheckFunction("IsCanvasColor", Horizontal, scope))
                     check = false;
             }
+            if (Color != null)
+            {
+                if (Utils.Colors.Contains(Color.Value))
+                    check = false;
+                else
+                {
+                    Utils.Errors.Add($"Error Semántico: \"{Color.Value} \" no es un color valido. Linea:  {Color.Line}  Columna:  {Color.Column} ");
+                    check = false;
+                }
+            }
+           
             return check;
         }
 

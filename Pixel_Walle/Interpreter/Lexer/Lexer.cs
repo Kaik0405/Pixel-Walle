@@ -29,17 +29,6 @@ namespace Pixel_Walle
             {"IsCanvasColor",Token.TokenType.IsCanvasColor},
             {"IsColor",Token.TokenType.IsColor},
 
-            //Colors
-            {"Red",Token.TokenType.Red},
-            {"Blue",Token.TokenType.Blue},
-            {"Green",Token.TokenType.Green},
-            {"Yellow",Token.TokenType.Yellow},
-            {"Orange",Token.TokenType.Orange},
-            {"Purple",Token.TokenType.Purple},
-            {"Black",Token.TokenType.Black},
-            {"White",Token.TokenType.White},
-            {"Transparent",Token.TokenType.Transparent},
-
             // Símbolos
             {"\\(", Token.TokenType.OpenParan},
             {"\\)", Token.TokenType.ClosedParan},
