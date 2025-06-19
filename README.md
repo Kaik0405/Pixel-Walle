@@ -292,7 +292,7 @@ Este código pinta un corazón en el canvas de color rojo, este canvas debe tene
 
 ## 🛠️ Cómo ejecutar el proyecto
 
-1. Descargar el .rar a continuación [-> click aquí <-](https://github.com/Kaik0405/Pixel-Walle/releases/download/v1.0/Pixel.Wall-E.v1.0.rar)
+1. Descargar el .rar a continuación [-> click aquí <-](https://github.com/Kaik0405/Pixel-Walle/releases/download/v1.1/Pixel.Wall-E.v1.1.rar)
 2. Descomprimir el .rar
 3. Abrir el archivo Pixel-Walle.exe
 
