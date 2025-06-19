@@ -9,12 +9,12 @@ using System.Windows.Documents;
 
 namespace Pixel_Walle
 {
-    public abstract class Instructions
+    public abstract class Instructions // Clase base para todas las instrucciones del lenguaje
     {
         public abstract bool CheckSemantic(IScope scope);
         public abstract void Evaluate(IVisitor visitor);
-    }
-    public class Spawn : Instructions
+    } 
+    public class Spawn : Instructions // Clase que representa al nodo de la instrucción de spawn
     {
         public Statement? X;
         public Statement? Y;
@@ -50,11 +50,10 @@ namespace Pixel_Walle
                 Utils.wall_E.PosY = (int)y;
             }
         }
-    }
-    public class Color : Instructions
+    } 
+    public class Color : Instructions // Clase que representa al nodo de la instrucción de color
     {
         public Token? Value;
-
         public override bool CheckSemantic(IScope scope)
         {
             if(Value != null)
@@ -75,10 +74,9 @@ namespace Pixel_Walle
                 Utils.wall_E.PaintBrush = Value.Value;
         }
     }
-    public class Size : Instructions
+    public class Size : Instructions // Clase que representa al nodo de la instrucción de tamaño
     {
         public Statement? K;
-
         public override bool CheckSemantic(IScope scope)
         {
             bool check = true;
@@ -104,7 +102,7 @@ namespace Pixel_Walle
             }
         }
     }
-    public class DrawLine : Instructions
+    public class DrawLine : Instructions // Clase que representa al nodo de la instrucción de dibujar una línea
     {
         public Statement? DirX;
         public Statement? DirY;
@@ -136,32 +134,42 @@ namespace Pixel_Walle
 
             if (DirX != null && DirY != null && Distance != null)
             {
-                x = Convert.ToDouble(DirX.Evaluate(visitor.Scope,visitor));
-                y = Convert.ToDouble(DirY.Evaluate(visitor.Scope,visitor));
+                x = Convert.ToDouble(DirX.Evaluate(visitor.Scope, visitor));
+                y = Convert.ToDouble(DirY.Evaluate(visitor.Scope, visitor));
                 distance = Convert.ToDouble(Distance.Evaluate(visitor.Scope, visitor));
 
-                int currX = Utils.wall_E.PosX;
-                int currY = Utils.wall_E.PosY;
+                if (distance < 0)
+                    throw new Exception($"Error en tiempo de ejecución: La distancia debe ser un valor positivo. Valor proporcionado: {distance}");
 
-                for (int step = 0; step < (int)distance; step++)
+                if (Utils.CheckDirections((int)x,(int)y))
                 {
-                    if (Utils.CheckRange(currX, currY))
+
+                    int currX = Utils.wall_E.PosX;
+                    int currY = Utils.wall_E.PosY;
+
+                    for (int step = 0; step < (int)distance; step++)
                     {
-                        Utils.PaintBrush(currX, currY);
-                        Utils.ChangeCellColor(currX, currY, Utils.wall_E.PaintBrush);
-                        currX += (int)x;
-                        currY += (int)y;
+                        if (Utils.CheckRange(currX, currY))
+                        {
+                            Utils.PaintBrush(currX, currY);
+                            Utils.ChangeCellColor(currX, currY, Utils.wall_E.PaintBrush);
+                            currX += (int)x;
+                            currY += (int)y;
+                        }
                     }
+                    if (!Utils.CheckRange(currX, currY))
+                        throw new Exception($"Error en tiempo de ejecución: La posición final de Wall-E ({currX}, {currY}) está fuera de los límites del canvas.");
+
+                    Utils.PaintBrush(currX, currY);
+                    Utils.wall_E.PosX = currX;
+                    Utils.wall_E.PosY = currY;
                 }
-                if(!Utils.CheckRange(currX, currY))
-                    throw new Exception($"Error en tiempo de ejecución: La posición final de Wall-E ({currX}, {currY}) está fuera de los límites del canvas.");
-                Utils.PaintBrush(currX, currY);
-                Utils.wall_E.PosX = currX;
-                Utils.wall_E.PosY = currY;
+                else
+                    throw new Exception($"Error en tiempo de ejecución: No se puede dibujar una línea con dirección ({x}, {y}). Deben ser los valores -1 , 0 , 1"); 
             }
         }
     }
-    public class DrawCircle : Instructions
+    public class DrawCircle : Instructions // Clase que representa al nodo de la instrucción de dibujar un círculo
     {
         public Statement? DirX;
         public Statement? DirY;
@@ -197,32 +205,40 @@ namespace Pixel_Walle
                 dirY = Convert.ToDouble(DirY.Evaluate(visitor.Scope, visitor));
                 radius = Convert.ToDouble(Radius.Evaluate(visitor.Scope, visitor));
 
-                int centerX = Utils.wall_E.PosX + (int)dirX * (int)radius;
-                int centerY = Utils.wall_E.PosY + (int)dirY * (int)radius;
+                if(radius < 0)
+                    throw new Exception($"Error en tiempo de ejecución: El radio debe ser un valor positivo. Valor proporcionado: {radius}");
 
-                int x = 0;
-                int y = (int)radius + 1;
-                int d = 3 - 2 * (int)radius + 1;
-
-                DrawCirclePoints(centerX, centerY, x, y);
-
-                while (y >= x) //algoritmo del círculo de Bresenham
+                if (Utils.CheckDirections((int)dirX, (int)dirY))
                 {
-                    x++;
-                    if (d > 0)
-                    {
-                        y--;
-                        d = d + 4 * (x - y) + 10;
-                    }
-                    else
-                    {
-                        d = d + 4 * x + 6;
-                    }
-                    DrawCirclePoints(centerX, centerY, x, y);
-                }
+                    int centerX = Utils.wall_E.PosX + (int)dirX * (int)radius;
+                    int centerY = Utils.wall_E.PosY + (int)dirY * (int)radius;
 
-                Utils.wall_E.PosX = centerX;
-                Utils.wall_E.PosY = centerY;
+                    int x = 0;
+                    int y = (int)radius + 1;
+                    int d = 3 - 2 * (int)radius + 1;
+
+                    DrawCirclePoints(centerX, centerY, x, y);
+
+                    while (y >= x) //algoritmo del círculo de Bresenham
+                    {
+                        x++;
+                        if (d > 0)
+                        {
+                            y--;
+                            d = d + 4 * (x - y) + 10;
+                        }
+                        else
+                        {
+                            d = d + 4 * x + 6;
+                        }
+                        DrawCirclePoints(centerX, centerY, x, y);
+                    }
+
+                    Utils.wall_E.PosX = centerX;
+                    Utils.wall_E.PosY = centerY;
+                }
+                else
+                    throw new Exception($"Error en tiempo de ejecución: No se puede dibujar una línea con dirección ({dirX}, {dirY}). Deben ser los valores -1 , 0 , 1");
             }
         }
         private void DrawCirclePoints(int cx, int cy, int x, int y)
@@ -237,7 +253,7 @@ namespace Pixel_Walle
             Utils.PaintBrush(cx - y, cy - x);
         }
     }
-    public class DrawRectangle : Instructions
+    public class DrawRectangle : Instructions // Clase que representa al nodo de la instrucción de dibujar un rectángulo
     {
         public Statement? DirX;
         public Statement? DirY;
@@ -287,38 +303,49 @@ namespace Pixel_Walle
                 dirX = Convert.ToInt32(DirX.Evaluate(visitor.Scope, visitor));
                 dirY = Convert.ToInt32(DirY.Evaluate(visitor.Scope, visitor));
                 distance = Convert.ToInt32(Distance.Evaluate(visitor.Scope, visitor));
-                height = Convert.ToInt32(Width.Evaluate(visitor.Scope, visitor));
-                width = Convert.ToInt32(Height.Evaluate(visitor.Scope, visitor));
+                height = Convert.ToInt32(Height.Evaluate(visitor.Scope, visitor));
+                width = Convert.ToInt32(Width.Evaluate(visitor.Scope, visitor));
 
-                int centerX = Utils.wall_E.PosX + dirX * distance;
-                int centerY = Utils.wall_E.PosY + dirY * distance;
+                if(distance < 0)
+                    throw new Exception($"Error en tiempo de ejecución: La distancia debe ser un valor positivo. Valor proporcionado: {distance}");
 
-                // Esquinas del rectángulo
-                int left = centerX - width / 2;
-                int right = centerX + (width - 1) / 2;
-                int top = centerY - height / 2;
-                int bottom = centerY + (height - 1) / 2;
+                if (width < 1 || height < 1)
+                    throw new Exception($"Error en tiempo de ejecución: El ancho y la altura del rectángulo deben ser mayores a 0. Ancho: {width}, Altura: {height}");
 
-                // Lados horizontales (top y bottom)
-                for (int x = left; x <= right; x++)
+                if (Utils.CheckDirections(dirX, dirY))
                 {
-                    Utils.PaintBrush(x, top);
-                    Utils.PaintBrush(x, bottom);
-                }
+                    int centerX = Utils.wall_E.PosX + dirX * distance;
+                    int centerY = Utils.wall_E.PosY + dirY * distance;
 
-                // Lados verticales (left y right), sin esquinas para evitar doble pintado
-                for (int y = top + 1; y <= bottom - 1; y++)
-                {
-                    Utils.PaintBrush(left, y);
-                    Utils.PaintBrush(right, y);
-                }
+                    // Esquinas del rectángulo
+                    int left = centerX - width / 2;
+                    int right = centerX + (width - 1) / 2;
+                    int top = centerY - height / 2;
+                    int bottom = centerY + (height - 1) / 2;
 
-                Utils.wall_E.PosX = centerX;
-                Utils.wall_E.PosY = centerY;
+                    // Lados horizontales (top y bottom)
+                    for (int x = left; x <= right; x++)
+                    {
+                        Utils.PaintBrush(x, top);
+                        Utils.PaintBrush(x, bottom);
+                    }
+
+                    // Lados verticales (left y right), sin esquinas para evitar doble pintado
+                    for (int y = top + 1; y <= bottom - 1; y++)
+                    {
+                        Utils.PaintBrush(left, y);
+                        Utils.PaintBrush(right, y);
+                    }
+
+                    Utils.wall_E.PosX = centerX;
+                    Utils.wall_E.PosY = centerY;
+                }
+                else
+                    throw new Exception($"Error en tiempo de ejecución: No se puede dibujar un rectángulo con dirección ({dirX}, {dirY}). Deben ser los valores -1 , 0 , 1");
             }
         }
     }
-    public class Fill : Instructions
+    public class Fill : Instructions // Clase que representa al nodo de la instrucción de llenar un área con el color del pincel
     {
         public override bool CheckSemantic(IScope scope)
         {
@@ -383,11 +410,10 @@ namespace Pixel_Walle
             }
         }
     }
-    public class Variable : Instructions
+    public class Variable : Instructions // Clase que representa al nodo de la instrucción de variable
     {
         public Token? Name;
         public Statement? Value;
-
         public override bool CheckSemantic(IScope scope)
         {
             bool check = true;
@@ -400,7 +426,6 @@ namespace Pixel_Walle
 
             return check;
         }
-
         public override void Evaluate(IVisitor visitor)
         {
             visitor.Define(Name?.Value, Value?.Evaluate(visitor.Scope, visitor));
@@ -415,7 +440,7 @@ namespace Pixel_Walle
         }
 
     }
-    public class GoTo : Instructions
+    public class GoTo : Instructions // Clase que representa al nodo de la instrucción de salto a una etiqueta
     {
         public Statement? Condition;
         public Token? Label_;
@@ -445,16 +470,16 @@ namespace Pixel_Walle
                         if (Utils.keyLabelsReferences.ContainsKey(Label_.Value))
                         {
                             Utils.keyLabelsReferences[Label_.Value.ToString()].Evaluate(visitor);
-                            Utils.CycleCodition = true;
+                            Utils.CycleCondition = true;
                         }
                         else
-                            Utils.CycleCodition = false;
+                            Utils.CycleCondition = false;
                     }
                 }
             }
         }
     }
-    public class Label : Instructions
+    public class Label : Instructions // Clase que representa al nodo de la etiqueta
     {
         public Token? Value;
         public Label? SubLabel;
@@ -477,9 +502,9 @@ namespace Pixel_Walle
             foreach (var instruction in Instructions)
             {
                 instruction?.Evaluate(visitor);
-                if (Utils.CycleCodition) break;
+                if (Utils.CycleCondition) break;
             }
-            if (SubLabel is not null && !Utils.CycleCodition)
+            if (SubLabel is not null && !Utils.CycleCondition)
                 SubLabel.Evaluate(visitor);      
         }
     }

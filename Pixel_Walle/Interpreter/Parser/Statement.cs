@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pixel_Walle
 {
-    public class Statement : ICheckSemantic
+    public class Statement : ICheckSemantic // Clase que representa una declaración en el lenguaje (&&)
     {
         public SubStatement? SubState { get; set; }
         public Statement? State { get; set; }
@@ -50,7 +50,6 @@ namespace Pixel_Walle
             }
             return null;
         }
-
         public Utils.ReturnType? GetType(IScope scope)
         {
             if (SubState != null)
@@ -59,7 +58,7 @@ namespace Pixel_Walle
             return null;
         }
     }
-    public class SubStatement : ICheckSemantic
+    public class SubStatement : ICheckSemantic // Clase que representa una sub-declaración en el lenguaje (||)
     {
         public Molecule? Mol { get; set; }
         public SubStatement? SubState { get; set; }
@@ -110,12 +109,11 @@ namespace Pixel_Walle
             return null;
         }
     }
-    public class Molecule : ICheckSemantic
+    public class Molecule : ICheckSemantic // Clase que representa una molécula en el lenguaje (==, !=, <, >, <=, >=)
     {
         public Atom? Atoms { get; set; }
         public Molecule? Mol { get; set; }
         public Token? Symbol { get; set; }
-
         public bool CheckSemantic(IScope scope)
         {
             bool check = true;
@@ -161,7 +159,6 @@ namespace Pixel_Walle
             }
             return null;
         }
-
         public Utils.ReturnType? GetType(IScope scope)
         {
             if (Atoms != null && Mol != null)
@@ -172,16 +169,15 @@ namespace Pixel_Walle
             return Utils.ReturnType.NULL;
         }
     }
-    public abstract class Atom
+    public abstract class Atom // Clase abstracta que representa un átomo en el lenguaje (números, booleanos, variables, etc.)
     {
         public abstract object? Evaluate(IScope? scope, IVisitor? visitor = null);
         public abstract bool CheckSemantic(IScope scope);
         public abstract Utils.ReturnType? GetType(IScope scope);
     }
-    public class Boolean : Atom
+    public class Boolean : Atom // Clase que representa un valor booleano en el lenguaje
     {
         public Token? Value { get; set; }
-
         public override bool CheckSemantic(IScope scope)
         {
             return true;

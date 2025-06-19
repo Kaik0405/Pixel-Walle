@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pixel_Walle
 {
-    public class Expression : Atom
+    public class Expression : Atom // Clase que representa una expresión en el lenguaje (Term + Expression)
     {
         public Token? Operator { get; set; }
         public Expression? Expressions { get; set; }
@@ -60,7 +60,7 @@ namespace Pixel_Walle
             return null;
         }
     }
-    public class Term : ICheckSemantic
+    public class Term : ICheckSemantic // Clase que representa un término en el lenguaje (Factor * Term | Factor / Term | Factor % Term | Factor ^ Term)
     {
         public Token? Operator { get; set; }
         public Term? Terms { get; set; }
@@ -114,7 +114,7 @@ namespace Pixel_Walle
             return 0;
         }
     }
-    public class Factor : ICheckSemantic
+    public class Factor : ICheckSemantic // Clase que representa un factor en el lenguaje (Value | Functions | Expressions)
     {
         public Token? Value { get; set; }
         public Functions? Functions { get; set; }

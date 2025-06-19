@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pixel_Walle
 {
-    public class Scope : IScope
+    public class Scope : IScope  // Clase que representa el Scope (Ámbito o Alcance) de las variables
     {
         public IScope? Parent { get; set; }
         public Dictionary<string, Statement?> Defined { get; set; }
@@ -25,12 +25,12 @@ namespace Pixel_Walle
             child.Parent = this;
 
             return child;
-        }
+        }  // Retorna un nuevo hijo de este Scope
         public void Define(Variable variable)
         {
             if (!(variable.Name?.Value is null) && !(variable.Value is null) && !Defined.ContainsKey(variable.Name.Value))
                 Defined.Add(variable.Name.Value, variable.Value);
-        }
+        }  // Agrega la variable al Scope
         public Utils.ReturnType? GetType(string? search, IScope scope)
         {
             if ((search != null) && scope.IsDefined(search))
@@ -42,8 +42,7 @@ namespace Pixel_Walle
                     return scope.Parent.GetType(search, scope.Parent);
             }
             return null;
-        }
-
+        }  // Retorna el tipo de variable (String, Bool, Digit)
         public bool IsDefined(string? search)
         {
             if (search is not null)
@@ -56,9 +55,9 @@ namespace Pixel_Walle
             }
 
             return false;
-        }
+        }  // Verifica si la variable está definida
     }
-    public class Visitor : IVisitor
+    public class Visitor : IVisitor  // Clase que representa el Visitor (Ámbito o Alcance) de las variables para la evaluación de expresiones y declaraciones
     {
         // Property
         public IVisitor? Parent { get; set; }                   // Padre de este objeto en el árbol de Visitor

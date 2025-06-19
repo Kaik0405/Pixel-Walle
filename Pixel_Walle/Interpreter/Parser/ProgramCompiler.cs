@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Pixel_Walle
 {
-    public class ProgramCompiler : ICheckSemantic
+    public class ProgramCompiler : ICheckSemantic // Clase principal del AST (Nodo Raíz)
     {
-        public List<Instructions?> Instructions { get; set; }
-
+        public List<Instructions?> Instructions { get; set; } // Lista de instrucciones
         public ProgramCompiler()
         {
             Instructions = new List<Instructions?>();

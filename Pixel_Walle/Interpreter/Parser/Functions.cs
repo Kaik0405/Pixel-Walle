@@ -9,13 +9,13 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace Pixel_Walle
 {
-    public abstract class Functions
+    public abstract class Functions // Clase base para las funciones del lenguaje
     {
         public abstract bool CheckSemantic(IScope scope);
         public abstract object Evaluate(IScope? scope, IVisitor? visitor = null);
         public abstract Utils.ReturnType GetType(IScope? scope);
     }
-    public class GetActualX : Functions
+    public class GetActualX : Functions // Clase que representa la función GetActualX
     {
         public override bool CheckSemantic(IScope scope)
         {
@@ -30,7 +30,7 @@ namespace Pixel_Walle
             return Utils.ReturnType.Number;
         }
     }
-    public class GetActualY : Functions
+    public class GetActualY : Functions // Clase que representa la función GetActualY
     {
         public override bool CheckSemantic(IScope scope)
         {
@@ -45,7 +45,7 @@ namespace Pixel_Walle
             return Utils.ReturnType.Number;
         }
     }
-    public class GetCanvasSize : Functions
+    public class GetCanvasSize : Functions  // Clase que representa la función GetCanvasSize
     {
         public override bool CheckSemantic(IScope scope)
         {
@@ -60,14 +60,13 @@ namespace Pixel_Walle
             return Utils.ReturnType.Number;
         }
     }
-    public class GetColorCount : Functions
+    public class GetColorCount : Functions // Clase que representa la función GetColorCount
     {
         public Token? Color;
         public Statement? X1;
         public Statement? Y1;
         public Statement? X2;
         public Statement? Y2;
-
         public override bool CheckSemantic(IScope scope)
         {
             bool check = true;
@@ -143,10 +142,9 @@ namespace Pixel_Walle
             return Utils.ReturnType.Number;
         }
     }
-    public class IsBrushColor : Functions
+    public class IsBrushColor : Functions  // Clase que representa la función IsBrushColor
     {
         public Token? Color;
-
         public override bool CheckSemantic(IScope scope)
         {
             if (Color != null)
@@ -173,10 +171,9 @@ namespace Pixel_Walle
             return Utils.ReturnType.Number;
         }
     }
-    public class IsBrushSize : Functions
+    public class IsBrushSize : Functions  // Clase que representa la función IsBrushSize
     {
         public Statement? Size;
-
         public override bool CheckSemantic(IScope scope)
         {
             if (Size != null)
@@ -199,12 +196,11 @@ namespace Pixel_Walle
             return Utils.ReturnType.Number;
         }
     }
-    public class IsCanvasColor : Functions
+    public class IsCanvasColor : Functions  // Clase que representa la función IsCanvasColor
     {
         public Token? Color;
         public Statement? Vertical;
         public Statement? Horizontal;
-
         public override bool CheckSemantic(IScope scope)
         {
             bool check = true;
@@ -232,7 +228,6 @@ namespace Pixel_Walle
            
             return check;
         }
-
         public override object Evaluate(IScope? scope, IVisitor? visitor = null)
         {
             int x = Convert.ToInt32(Vertical?.Evaluate(scope, visitor));
@@ -248,7 +243,6 @@ namespace Pixel_Walle
 
             return 0;
         }
-
         public override Utils.ReturnType GetType(IScope? scope)
         {
             return Utils.ReturnType.Number;

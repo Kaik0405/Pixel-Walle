@@ -9,6 +9,7 @@ namespace Pixel_Walle
 {
     public class Lexer
     {
+        //Dictionary of Keywords
         private static Dictionary<string, Token.TokenType> KeyWords = new Dictionary<string, Token.TokenType>()
         {
             //KeyWords
@@ -73,8 +74,10 @@ namespace Pixel_Walle
             {"[a-zA-Z_]\\w*", Token.TokenType.UnKnown},
             {"\\d+", Token.TokenType.Digit},
         };
-        private string[]? code;
-        private List<Token> tokensList;
+        
+        // Properties
+        private string[]? code; 
+        private List<Token> tokensList; 
         public string[] Code { get; private set; }
         public Token[] TokensList
         {
@@ -86,6 +89,7 @@ namespace Pixel_Walle
                     return tokensList.ToArray();
             }
             private set { }
+        
         }
         //Builder
         public Lexer(string[] code)
@@ -93,8 +97,9 @@ namespace Pixel_Walle
             this.code = code;
             tokensList = new List<Token>();
         }
+
         //Methods
-        public Token[] GetLexer()
+        public Token[] GetLexer() // Método que obtiene los tokens del código fuente
         {
             string input = string.Join('\n'.ToString(), code);
             string pattern = $"{string.Join("|", KeyWords.Keys)}";

@@ -13,21 +13,22 @@ using System.Windows.Media;
 
 namespace Pixel_Walle
 {
-    public class Parser : IParsing
+    public class Parser : IParsing // Clase que se encarga de parsear el código fuente y construir el AST (Árbol de Sintaxis Abstracta)
     {
-        private Token[] Tokens { get; }
-        private Token? CurrentToken { get; set; }
-        private int Index { get; set; }
-        private bool DetectorError = false;
+        // Properties
+        private Token[] Tokens { get; } // Lista de Tokens 
+        private Token? CurrentToken { get; set; } // Token actual
+        private int Index { get; set; }  // Índice del Token actual
+        private bool DetectorError = false;  // Detector de errores sintácticos
 
-        //Builder
+        // Builder
         public Parser(Token[] tokens)
         {
             Tokens = tokens;
             CurrentToken = null;
             Index = -1;
         }
-        //Methods
+        // Methods
         public bool ThereIsNext(int i = 1)
         {
             if (Index + i < Tokens.Length)

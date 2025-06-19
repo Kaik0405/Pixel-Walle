@@ -12,12 +12,20 @@ namespace Pixel_Walle
 {
     public static class Utils
     {
-        public static bool CycleCodition = false;
-        public static Border[,] cellMatrix = new Border[10, 10];
-        public static Wall_E wall_E = new Wall_E(0, 0, "");
+        //Enum
         public enum ReturnType { Bool, Number, NULL }
-        public static List<string> Errors = new List<string>();
-        public static Dictionary<string, Label> keyLabelsReferences = new Dictionary<string, Label>();
+
+        // Static properties
+        public static bool CycleCondition = false;                 // Variable para controlar el ciclo de ejecución (GoTo)
+        
+        public static Border[,] cellMatrix = new Border[10, 10];  // Matriz de referencia de las celdas que representan el canvas
+
+        public static Wall_E wall_E = new Wall_E(0, 0, "");       // Instancia de Wall_E que representa el estado actual del robot
+        
+        public static List<string> Errors = new List<string>();   // Lista de errores encontrados durante la ejecución del código
+        
+        public static Dictionary<string, Label> keyLabelsReferences = new Dictionary<string, Label>();  // Diccionario para almacenar referencias a etiquetas (Labels) por su nombre
+        
         public static HashSet<string> Colors = new HashSet<string>()
         {
             "AliceBlue", "AntiqueWhite", "Aqua", "Aquamarine", "Azure", "Beige", "Bisque", "Black", "BlanchedAlmond", "Blue",
@@ -36,8 +44,8 @@ namespace Pixel_Walle
             "RosyBrown", "RoyalBlue", "SaddleBrown", "Salmon", "SandyBrown", "SeaGreen", "SeaShell", "Sienna", "Silver", "SkyBlue",
             "SlateBlue", "SlateGray", "Snow", "SpringGreen", "SteelBlue", "Tan", "Teal", "Thistle", "Tomato", "Turquoise",
             "Violet", "Wheat", "White", "WhiteSmoke", "Yellow", "YellowGreen","Transparent"
-        };
-
+        };  // Lista de colores              
+        
         public static List<Token.TokenType> FunctionList = new List<Token.TokenType>
         {
             Token.TokenType.GetActualX,
@@ -47,11 +55,13 @@ namespace Pixel_Walle
             Token.TokenType.IsBrushColor,
             Token.TokenType.IsBrushSize,
             Token.TokenType.IsCanvasColor,
-        };
+        }; // Lista de tipos de tokens que representan funciones del lenguaje
+
+        // Methods
         public static void RemoveDuplicatesFromErrors()
         {
             Errors = Errors.Distinct().ToList();
-        }
+        }                  // Método para eliminar duplicados de la lista de errores
         public static double Operation(double a, double b, Token? value)
         {
             switch (value?.Type)
@@ -76,7 +86,7 @@ namespace Pixel_Walle
                 default:
                     return 0;
             }
-        }
+        } // Método para realizar operaciones aritméticas entre dos números según el tipo de token proporcionado
         public static bool Compare(double a, double b, Token? value)
         {
 
@@ -94,8 +104,8 @@ namespace Pixel_Walle
                     return a == b;
                 default: return false;
             }
-        }
-        public static bool CheckValidLabel(string? name) => (name?[0] == '_' || name?[name.Length - 1] == '_') ? false : true;
+        }     // Método para comparar dos números según el tipo de token proporcionado
+        public static bool CheckValidLabel(string? name) => (name?[0] == '_' || name?[name.Length - 1] == '_') ? false : true;  // Método para verificar si un nombre de etiqueta es válido, no puede comenzar o terminar con '_'
         public static bool CheckInstruction(string nameIns, Statement statement, IScope scope)
         {
             bool checking = true;
@@ -108,7 +118,7 @@ namespace Pixel_Walle
                 checking = false;
             }
             return checking;
-        }
+        }  // Método para verificar si una instrucción es válida, comprobando su semántica y tipo de retorno
         public static bool CheckFunction(string nameIns, Statement statement, IScope scope)
         {
             bool checking = true;
@@ -121,7 +131,7 @@ namespace Pixel_Walle
                 checking = false;
             }
             return checking;
-        }
+        }  // Método para verificar si una función es válida, comprobando su semántica y tipo de retorno
         public static void ChangeCellColor(int row, int column, string colorName)
         {
             // Convertir el nombre del color a un objeto Brush
@@ -132,16 +142,17 @@ namespace Pixel_Walle
                 // Cambiar el color de fondo de la celda
                 cellMatrix[row, column].Background = newColor;
             }
-        }
+        }  // Método para cambiar el color de una celda específica en la matriz de celdas
         public static bool CheckRange(int row, int column)
         {
             if (row < 0 || column < 0)
             { return false; }
+
             if (row >= cellMatrix.GetLength(0) || column >= cellMatrix.GetLength(1))
             { return false; }
 
             return true;
-        }
+        }  // Método para verificar si una celda está dentro del rango de la matriz de celdas
         public static void PaintBrush(int x, int y)
         {
             int distance = 0;
@@ -157,18 +168,30 @@ namespace Pixel_Walle
                     int py = y + dy;
 
                     if (CheckRange(px, py))
-                    {
                         ChangeCellColor(px, py, wall_E.PaintBrush);
-                    }
                 }
             }
-        }
+        }  // Método para pintar un área alrededor de una celda específica según el tamaño del pincel del robot
         public static void Reset()
         {
-            CycleCodition = false;
+            CycleCondition = false;
             Errors.Clear();
             keyLabelsReferences.Clear();
             wall_E = new Wall_E(0, 0, "");
-        }
+        }  // Método para reiniciar el estado del intérprete, limpiando errores, referencias de etiquetas y restableciendo el estado del robot
+        public static bool CheckDirections(int x, int y)
+        {
+            bool isValid = false;
+
+            if (x == -1 || x == 1 || x == 0)
+                isValid = true;
+            else return false;
+            
+            if (y == -1 || y == 1 || y == 0)
+                isValid = true;
+            else return false;
+
+            return isValid;
+        }   // Método para verificar si las direcciones de movimiento del robot son válidas, permitiendo solo movimientos horizontales o verticales
     }
 }

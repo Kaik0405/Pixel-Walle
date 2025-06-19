@@ -8,6 +8,7 @@ namespace Pixel_Walle
 {
     public class Token
     {
+        //Enum
         public enum TokenType
         {
             //Instructions
@@ -73,11 +74,15 @@ namespace Pixel_Walle
             Digit,           // 1354 
             UnKnown,          // UserText
 
-        }
-        public TokenType Type { get; set; }
-        public string Value { get; set; }
-        public int Line { get; set; }
-        public int Column { get; set; }
+        } // Enumeración de tipos de Tokens
+
+        // Properties
+        public TokenType Type { get; set; } // Tipo de Token
+        public string Value { get; set; }  // Valor del Token
+        public int Line { get; set; }  // Línea donde se encuentra el Token
+        public int Column { get; set; }  // Columna donde se encuentra el Token
+
+        // Builder
         public Token(TokenType Type, string Value, int Line, int Column)
         {
             this.Type = Type;
@@ -85,6 +90,8 @@ namespace Pixel_Walle
             this.Line = Line;
             this.Column = Column;
         }
+
+        // Methods
         public static int SearchLine(string input, int index)
         {
             int counter = 1;
@@ -96,7 +103,7 @@ namespace Pixel_Walle
                     counter++;
             }
             return counter;
-        }
+        }    // Método para buscar la línea de un token en el código fuente
         public static int SearchColumn(string input, int index)
         {
             for (int i = index; i >= 1; i--)
@@ -104,6 +111,6 @@ namespace Pixel_Walle
                     return (index - i) - 1;
 
             return index;
-        }
+        }  // Método para buscar la columna de un token en el código fuente
     }
 }

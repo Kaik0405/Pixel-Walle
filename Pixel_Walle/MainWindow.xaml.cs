@@ -24,7 +24,7 @@ namespace Pixel_Walle
         {
             RunExecute(sender, e);
         }
-        private void RunExecute(object sender, RoutedEventArgs e)
+        private void RunExecute(object sender, RoutedEventArgs e) // Método para ejecutar el código ingresado en el editor
         {
             if (CodeEditor.Text.Length > 0)
             {
@@ -34,7 +34,7 @@ namespace Pixel_Walle
 
                 ProgramCompiler ast = parsing.Parsing();
 
-                if (Utils.Errors.Count > 0)
+                if (Utils.Errors.Count > 0) // Verifica si se encontraron errores sintácticos durante el parsing
                 {
                     StringBuilder errorMessage = new StringBuilder("----Errores Sintácticos Detectados----\n");
                     foreach (var error in Utils.Errors)
@@ -42,12 +42,11 @@ namespace Pixel_Walle
                         errorMessage.AppendLine(error);
                     }
                     MessageBox.Show(errorMessage.ToString(), "Errores Sintácticos", MessageBoxButton.OK, MessageBoxImage.Error);
-
                 }
                 else
                 {
                     Scope scope = new Scope();
-                    if (!ast.CheckSemantic(scope))
+                    if (!ast.CheckSemantic(scope))  // Verifica si se encontraron errores semánticos durante el chequeo semántico
                     {
                         StringBuilder errorMessage = new StringBuilder("----Errores Semánticos Detectados----\n");
                         foreach (var error in Utils.Errors)
@@ -63,7 +62,7 @@ namespace Pixel_Walle
                             IVisitor visitor = new Visitor();
                             ast.Evaluate(visitor);
                         }
-                        catch (Exception ex)
+                        catch (Exception ex) // Captura cualquier excepción que ocurra durante la ejecución del código
                         {
                             MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
@@ -115,7 +114,7 @@ namespace Pixel_Walle
                     Utils.cellMatrix[i, j] = cell; // Guardar la referencia de la celda en la matriz
                 }
             }
-        }
+        } // Método para inicializar el canvas con un número específico de filas y columnas
         private void ResizeCanvasButton_Click(object sender, RoutedEventArgs e)
         {
             // Obtener las dimensiones del canvas desde los TextBox
@@ -125,7 +124,7 @@ namespace Pixel_Walle
             else
                 MessageBox.Show("Por favor, introduce dimensiones válidas.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
-        }
+        } // Método para redimensionar el canvas según las dimensiones ingresadas en los TextBox
         private string[] GetTextBoxLines()
         {
             // Obtener el texto completo del TextBox
@@ -135,7 +134,7 @@ namespace Pixel_Walle
             string[] lines = fullText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
             return lines;
-        }
+        } // Método para obtener las líneas del TextBox como un array de strings
         private void SaveFileButton_Click(object sender, RoutedEventArgs e)
         {
             // Crear un diálogo para guardar archivos
@@ -171,19 +170,16 @@ namespace Pixel_Walle
                 CodeEditor.Text = System.IO.File.ReadAllText(openFileDialog.FileName);
             }
         } //Cargar archivo con extension (.gw)
-
-        private void CodeEditor_TextChanged(object sender, TextChangedEventArgs e)
+        private void CodeEditor_TextChanged(object sender, TextChangedEventArgs e) // Método para la actualizar los números de líneas
         {
             UpdateLineNumbers();
         }
-
-        private void CodeEditorScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        private void CodeEditorScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e) // Sincronizar el scroll de los números de línea con el editor de texto
         {
             // Sincronizar el scroll de los números de línea con el editor de texto
             LineNumberScrollViewer.ScrollToVerticalOffset(CodeEditorScrollViewer.VerticalOffset);
         }
-
-        private void UpdateLineNumbers()
+        private void UpdateLineNumbers() // Método para actualizar los números de línea en el TextBlock
         {
             // Obtener el número total de líneas en el editor de texto
             int totalLines = CodeEditor.LineCount;
@@ -198,7 +194,7 @@ namespace Pixel_Walle
             // Actualizar el TextBlock con los números de línea
             LineNumbers.Text = lineNumbers.ToString();
         }
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        private void CloseButton_Click(object sender, RoutedEventArgs e) // Método para cerrar la aplicación
         {
             this.Close();
         }
