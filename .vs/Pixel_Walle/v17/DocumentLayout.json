@@ -79,8 +79,7 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-10T14:45:54.761Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -92,8 +91,7 @@
               "RelativeToolTip": "Pixel_Walle\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2025-04-10T14:45:57.65Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -117,8 +115,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Evaluate\\Wall_E.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-05T21:11:11.352Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-05T21:11:11.352Z"
             },
             {
               "$type": "Document",
@@ -130,8 +127,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Parser\\Statement.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAALEAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-07T00:34:43.202Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-07T00:34:43.202Z"
             },
             {
               "$type": "Document",
@@ -143,8 +139,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Parser\\Expressions.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAHQAAAB7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-07T00:33:33.847Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-07T00:33:33.847Z"
             },
             {
               "$type": "Document",
@@ -156,8 +151,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Parser\\ProgramCompiler.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-08T14:50:13.876Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-08T14:50:13.876Z"
             },
             {
               "$type": "Document",
@@ -169,8 +163,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Parser\\Instructions.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAABgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-07T02:06:59.242Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-07T02:06:59.242Z"
             },
             {
               "$type": "Document",
@@ -182,8 +175,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Parser\\Functions.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAI4AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-07T02:07:39.127Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-07T02:07:39.127Z"
             },
             {
               "$type": "Document",
@@ -195,8 +187,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Utils\\Utils.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAALgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-19T04:36:21.488Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-19T04:36:21.488Z"
             },
             {
               "$type": "Document",
@@ -208,8 +199,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Parser\\Parser.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAABPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-19T02:21:06.28Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-19T02:21:06.28Z"
             },
             {
               "$type": "Document",
@@ -221,8 +211,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Interfaces\\Interfaces.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-05T16:57:20.193Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-05T16:57:20.193Z"
             },
             {
               "$type": "Document",
@@ -234,8 +223,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Semantic\\Scope.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAADsAAACdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-05T16:56:01.358Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-05T16:56:01.358Z"
             },
             {
               "$type": "Document",
@@ -247,8 +235,7 @@
               "RelativeToolTip": "Pixel_Walle\\Interpreter\\Lexer\\Lexer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAGYAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-10T14:48:01.199Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-10T14:48:01.199Z"
             },
             {
               "$type": "Document",
