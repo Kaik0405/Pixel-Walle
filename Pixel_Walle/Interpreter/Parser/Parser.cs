@@ -198,65 +198,116 @@ namespace Pixel_Walle
         }
 
         //Arithmetic Expressions
-        private Expression ExpressionBuilder()
+        public Expression ParseExpression()
         {
             Expression expression = new Expression();
-            expression.Terms = TermBuilder();
 
-            if (LookAhead(false, Token.TokenType.Plus, Token.TokenType.Minus))
-            {
-                expression.Operator = MatchReturn();
-                expression.Expressions = ExpressionBuilder();
-            }
+            expression = ParseExpressionLv1() ?? new Expression();
 
             return expression;
         }
-        private Term TermBuilder()
+        private Expression? ParseExpressionLv1()
         {
-            Term term = new Term();
-            term.Factor = FactorBuilder();
-            if (LookAhead(false, Token.TokenType.Times, Token.TokenType.Divide, Token.TokenType.Pow, Token.TokenType.Module))
-            {
-                term.Operator = MatchReturn();
-                term.Terms = TermBuilder();
-            }
-            return term;
-        }
-        private Factor FactorBuilder()
-        {
-            Factor factor = new Factor();
+            Expression? left = ParseExpressionLv2();
 
+            while (LookAhead(false, Token.TokenType.Plus, Token.TokenType.Minus))
+            {
+                Token? operatorToken = MatchReturn(Token.TokenType.Plus, Token.TokenType.Minus);
+                Expression? right = ParseExpressionLv2();
+
+                if (right == null)
+                {
+                    return null;
+                }
+
+                left = new Expression
+                {
+                    Operator = operatorToken,
+                    Terms = new Term { Factor = new Factor { Expressions = left } },
+                    Expressions = new Expression { Terms = new Term { Factor = new Factor { Expressions = right } } }
+                };
+            }
+            return left;
+        }
+        private Expression? ParseExpressionLv2()
+        {
+            Expression? left = ParseExpressionLv3();
+
+            while (LookAhead(false, Token.TokenType.Times, Token.TokenType.Divide, Token.TokenType.Module, Token.TokenType.Pow))
+            {
+                Token? operatorToken = MatchReturn(Token.TokenType.Times, Token.TokenType.Divide, Token.TokenType.Module, Token.TokenType.Pow);
+                Expression? right = ParseExpressionLv3();
+
+                if (right == null)
+                {
+                    return null;
+                }
+
+                left = new Expression
+                {
+                    Operator = operatorToken,
+                    Terms = new Term
+                    {
+                        Factor = new Factor { Expressions = left },
+                        Operator = operatorToken,
+                        Terms = new Term { Factor = new Factor { Expressions = right } }
+                    }
+                };
+            }
+
+            return left;
+        }
+        private Expression? ParseExpressionLv3()
+        {
             if (LookAhead(false, Token.TokenType.OpenParan))
             {
-                Match();
-                factor.Expressions = ExpressionBuilder();
+                Match(Token.TokenType.OpenParan);
+                Expression? innerExpression = ParseExpression();
                 Match(Token.TokenType.ClosedParan);
+                return innerExpression;
             }
             else
             {
                 if (LookAhead(false, Token.TokenType.Digit))
-                    factor.Value = MatchReturn();
-                else if (LookAhead(false, Token.TokenType.Minus, Token.TokenType.Digit))
                 {
-                    Match();
-                    Token negative = new Token(Token.TokenType.Digit, "-" + LookAhead().Value, LookAhead().Line, LookAhead().Column);
-                    Match();
-                    factor.Value = negative;
+                    Token? valueToken = MatchReturn(Token.TokenType.Digit);
+                    return new Expression
+                    {
+                        Terms = new Term
+                        {
+                            Factor = new Factor { Value = valueToken }
+                        }
+                    };
                 }
-
                 else if (LookAhead(false, Token.TokenType.UnKnown))
-                    factor.Value = MatchReturn(Token.TokenType.UnKnown);
-
+                {
+                    Token? variableToken = MatchReturn(Token.TokenType.UnKnown);
+                    return new Expression
+                    {
+                        Terms = new Term
+                        {
+                            Factor = new Factor { Value = variableToken }
+                        }
+                    };
+                }
                 else if (Utils.FunctionList.Contains(LookAhead().Type))
-                    factor.Functions = FunctionBuilder();
+                {
+                    return new Expression
+                    {
+                        Terms = new Term
+                        {
+                            Factor = new Factor { Functions = FunctionBuilder() }
+                        }
+                    };
+                }
                 else
                 {
+                    Utils.Errors.Add($"Error Sintáctico: Se esperaba un valor o una expresión. Linea: {LookAhead()?.Line}, Columna: {LookAhead()?.Column}");
                     DetectorError = true;
                     Recover();
-                    Utils.Errors.Add($"Error Sintáctico: Se esperaba un valor. Line: {LookAhead()?.Line} Column: {LookAhead()?.Column}");
+                    return null;
                 }
             }
-            return factor;
         }
 
         //Statements
@@ -303,7 +354,7 @@ namespace Pixel_Walle
             if (LookAhead(false, Token.TokenType.True, Token.TokenType.False))
                 return BooleanBuilder();
             else
-                return ExpressionBuilder();
+                return ParseExpression();
         }
         private Boolean BooleanBuilder()
         {
